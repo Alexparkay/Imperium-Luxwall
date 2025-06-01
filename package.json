@@ -1,0 +1,48 @@
+{
+  "name": "imperium-windows",
+  "version": "1.0.0",
+  "description": "AI-powered analytics dashboard for window replacement and energy efficiency optimization",
+  "private": true,
+  "scripts": {
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build", 
+    "preview": "cd frontend && npm run preview",
+    "install:frontend": "cd frontend && npm install",
+    "install:all": "npm run install:frontend",
+    "clean": "cd frontend && rm -rf dist node_modules && npm install",
+    "deploy": "cd frontend && npm run build && vercel --prod"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Alexparkay/Imperium-Windows.git"
+  },
+  "keywords": [
+    "react",
+    "typescript",
+    "vite",
+    "dashboard",
+    "analytics",
+    "energy-efficiency",
+    "window-replacement",
+    "ai",
+    "section-179d"
+  ],
+  "author": "Alex Parkay",
+  "license": "MIT",
+  "dependencies": {
+    "@splinetool/react-spline": "^4.0.0",
+    "@splinetool/runtime": "^1.9.92",
+    "apexcharts": "^4.5.0",
+    "d3-geo": "^3.1.1",
+    "react-apexcharts": "^1.7.0",
+    "react-globe": "^5.0.2",
+    "react-simple-maps": "^3.0.0",
+    "react-usa-map": "^1.5.0",
+    "three": "^0.176.0",
+    "topojson-client": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/react-simple-maps": "^3.0.6",
+    "@types/topojson-client": "^3.1.5"
+  }
+}
