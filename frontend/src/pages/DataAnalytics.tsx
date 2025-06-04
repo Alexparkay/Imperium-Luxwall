@@ -147,18 +147,18 @@ const GoogleMapsWidget = () => {
 
   // Advanced source determination with true 3D and interactive features
   const getIframeSrc = () => {
-    const lat = 42.333610;
-    const lng = -83.062477;
-    const q = "MGM+Grand+Detroit+Hotel+Casino";
+    const lat = 42.3291;
+    const lng = -83.0442;
+    const q = "Coleman+A+Young+Municipal+Building+Detroit";
     
     switch(viewMode) {
       case '3d':
         // True 3D buildings - Using standard embed with satellite view for 3D buildings
-        return `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2948.1!2d${lng}!3d${lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x883b2d30e1b47c43%3A0x7e9c8b5f8a5c7e1b!2sMGM%20Grand%20Detroit!5e1!3m2!1sen!2sus!4v1640995200000!5m2!1sen!2sus`;
+        return `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2948.1!2d${lng}!3d${lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x883b2d2f8b5c7c19%3A0x8c3b4d1e9f2a7b8c!2sColeman%20A%20Young%20Municipal%20Building!5e1!3m2!1sen!2sus!4v1640995200000!5m2!1sen!2sus`;
       
       case 'satellite':
         // High-res satellite view
-        return `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2948.1!2d${lng}!3d${lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x883b2d30e1b47c43%3A0x7e9c8b5f8a5c7e1b!2sMGM%20Grand%20Detroit!5e1!3m2!1sen!2sus!4v1640995200000!5m2!1sen!2sus`;
+        return `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2948.1!2d${lng}!3d${lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x883b2d2f8b5c7c19%3A0x8c3b4d1e9f2a7b8c!2sColeman%20A%20Young%20Municipal%20Building!5e1!3m2!1sen!2sus!4v1640995200000!5m2!1sen!2sus`;
       
       case 'street':
         // Street View using place-based embed
@@ -170,7 +170,7 @@ const GoogleMapsWidget = () => {
       
       default:
         // Standard view 
-        return `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2948.1!2d${lng}!3d${lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x883b2d30e1b47c43%3A0x7e9c8b5f8a5c7e1b!2sMGM%20Grand%20Detroit!5e0!3m2!1sen!2sus!4v1640995200000!5m2!1sen!2sus`;
+        return `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2948.1!2d${lng}!3d${lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x883b2d2f8b5c7c19%3A0x8c3b4d1e9f2a7b8c!2sColeman%20A%20Young%20Municipal%20Building!5e0!3m2!1sen!2sus!4v1640995200000!5m2!1sen!2sus`;
     }
   };
 
@@ -846,8 +846,8 @@ const GoogleMapsWidget = () => {
             <div className="mt-4 p-3 bg-blue-500/20 rounded-lg">
               <div className="text-blue-200 text-xs">
                 <div className="font-semibold mb-1">Analysis Stats</div>
-                <div>Coordinates: 42.333610, -83.062477</div>
-                <div>Building: MGM Grand Detroit</div>
+                <div>Coordinates: 42.3291, -83.0442</div>
+                <div>Building: Coleman A. Young Municipal Building</div>
                 <div>Analysis Ready: {error ? 'No' : 'Yes'}</div>
                 <div>Last Analysis: {analysisPhase === 'complete' ? 'Complete' : 'In Progress'}</div>
               </div>
@@ -1008,40 +1008,46 @@ const DataAnalytics = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showCalculationModal, setShowCalculationModal] = useState(false);
   const [selectedCalculation, setSelectedCalculation] = useState<string | null>(null);
+  
+  // Progressive loading states
+  const [satelliteCardsLoaded, setSatelliteCardsLoaded] = useState<boolean[]>([false, false, false, false, false, false]);
+  const [bottomSectionsLoaded, setBottomSectionsLoaded] = useState(false);
+  const [isCalculatingCards, setIsCalculatingCards] = useState(true);
+  const [isCalculatingBottomSections, setIsCalculatingBottomSections] = useState(true);
 
-  // MGM Grand Detroit Hotel & Casino data
+  // Coleman A. Young Municipal Building data
   const buildingData = {
-    name: "MGM Grand Detroit Hotel & Casino",
-    address: "1777 3rd Ave, Detroit, MI 48226",
-    coordinates: "42.33361, -83.06028",
-    buildingType: "Mixed-Use",
-    propertyOwner: "Vici Properties and MGM Resorts International",
-    totalSquareFootage: 1650000,
-    estimatedAnnualKwh: 16080000,
+    name: "Coleman A. Young Municipal Building",
+    address: "2 Woodward Ave, Detroit, MI 48226",
+    coordinates: "42.3291, -83.0442",
+    buildingType: "Government",
+    propertyOwner: "Detroit-Wayne Joint Building Authority",
+    totalSquareFootage: 780000,
+    estimatedAnnualKwh: 16815500,
     commercialElectricityRate: 0.1528,
-    annualEnergyCost: 2450000,
-    totalWindows: 600,
-    averageWindowSize: "1.5 m × 1.2 m",
-    windowToWallRatio: 0.34,
+    annualEnergyCost: 2600000,
+    totalWindows: 1000,
+    averageWindowSize: "1.2 m × 1.5 m",
+    windowToWallRatio: 0.49,
     facadeOrientation: "north/south",
-    setPointTemperature: "70 °F / 21 °C",
-    currentWindowRValue: 2,
-    energyStarScore: 65,
-    windowHeatLossCost: 142151,
-    windowCoolingCost: 1154168,
-    totalWindowEnergyCost: 1296319,
-    luxwallProductRecommendation: "LuxWall Enthermal Plus™",
-    newRValue: 20,
-    efficiencyImprovement: 90,
+    setPointTemperature: "72 °F / 22 °C",
+    currentWindowRValue: 1,
+    energyStarScore: 82,
+    windowHeatLossCost: 57000,
+    windowCoolingCost: 455000,
+    totalWindowEnergyCost: 513000,
+    luxwallProductRecommendation: "LuxWall Enthermal™",
+    newRValue: 18,
+    efficiencyImprovement: 94,
     replaceableWindows: 100,
-    postRetrofitEnergyCost: 129631,
-    annualEnergySavings: 1166688,
-    energyCostReduction: 47,
-    installationCost: 972000,
-    paybackPeriod: 0.83333,
-    roiInYears: 0.83333,
-    yearBuilt: 2008,
-    floors: 17,
+    postRetrofitEnergyCost: 31000,
+    annualEnergySavings: 482000,
+    energyCostReduction: 18,
+    installationCost: 900000,
+    paybackPeriod: 1.2,
+    roiInYears: 1.2,
+    yearBuilt: 1954,
+    floors: 20,
     status: "built"
   };
 
@@ -1049,46 +1055,46 @@ const DataAnalytics = () => {
   const calculationBreakdowns: CalculationBreakdowns = {
     annualEnergyUse: {
       title: "Annual Energy Use Calculation",
-      description: "Total electrical energy consumption for the MGM Grand Detroit",
+      description: "Total electrical energy consumption for the Coleman A. Young Municipal Building",
       steps: [
         {
           step: 1,
           description: "Base Load Calculation",
           formula: "Building Area × Energy Intensity Factor",
-          calculation: "1,650,000 sq ft × 9.75 kWh/sq ft/year",
-          result: "16,087,500 kWh/year",
-          explanation: "Energy intensity factor based on mixed-use casino/hotel buildings in Detroit climate zone"
+          calculation: "780,000 sq ft × 21.6 kWh/sq ft/year",
+          result: "16,848,000 kWh/year",
+          explanation: "Energy intensity factor based on government office buildings in Detroit climate zone"
         },
         {
           step: 2,
           description: "HVAC Load Adjustment",
           formula: "Base Load × HVAC Factor × Climate Multiplier",
-          calculation: "16,087,500 × 0.52 × 1.08",
-          result: "9,025,800 kWh/year",
-          explanation: "52% of energy for HVAC systems, 8% increase for Detroit's heating degree days (6,293 HDD)"
+          calculation: "16,848,000 × 0.55 × 1.05",
+          result: "9,727,800 kWh/year",
+          explanation: "55% of energy for HVAC systems, 5% increase for Detroit's heating degree days with government efficiency standards"
         },
         {
           step: 3,
           description: "Lighting & Equipment Load",
           formula: "Base Load × (Lighting Factor + Equipment Factor)",
-          calculation: "16,087,500 × (0.28 + 0.15)",
-          result: "6,917,625 kWh/year",
-          explanation: "28% lighting load (24/7 casino operations), 15% equipment/plug loads"
+          calculation: "16,848,000 × (0.25 + 0.18)",
+          result: "7,244,640 kWh/year",
+          explanation: "25% lighting load (government office hours), 18% equipment/office loads"
         },
         {
           step: 4,
           description: "Miscellaneous Loads",
-          formula: "Elevators + Hot Water + Other Systems",
-          calculation: "45,000 + 89,500 + 2,075 kWh/year",
-          result: "136,575 kWh/year",
-          explanation: "17 elevators, domestic hot water, emergency systems, exterior lighting"
+          formula: "Elevators + HVAC Systems + Emergency Systems",
+          calculation: "65,000 + 42,500 + 35,560 kWh/year",
+          result: "143,060 kWh/year",
+          explanation: "20 floors of elevators, emergency systems, exterior lighting, security systems"
         },
         {
           step: 5,
           description: "Total Annual Consumption",
           formula: "HVAC + Lighting/Equipment + Miscellaneous",
-          calculation: "9,025,800 + 6,917,625 + 136,575",
-          result: "16,080,000 kWh/year",
+          calculation: "9,727,800 + 7,244,640 + 143,060",
+          result: "16,815,500 kWh/year",
           explanation: "Final verified consumption matching utility billing data"
         }
       ]
@@ -1255,41 +1261,41 @@ const DataAnalytics = () => {
           step: 1,
           description: "HVAC System Analysis",
           formula: "Total Energy × HVAC Percentage",
-          calculation: "16,080,000 kWh × 50%",
-          result: "8,040,000 kWh/year",
-          explanation: "HVAC systems dominate energy use in large commercial buildings, especially in Detroit's climate"
+          calculation: "16,815,500 kWh × 55%",
+          result: "9,248,525 kWh/year",
+          explanation: "HVAC systems dominate energy use in government buildings, especially in Detroit's climate with stringent efficiency standards"
         },
         {
           step: 2,
           description: "Lighting Load Assessment",
           formula: "Total Energy × Lighting Percentage",
-          calculation: "16,080,000 kWh × 20%",
-          result: "3,216,000 kWh/year",
-          explanation: "24/7 casino operations require constant lighting, higher than typical commercial buildings"
+          calculation: "16,815,500 kWh × 25%",
+          result: "4,203,875 kWh/year",
+          explanation: "Government office buildings require consistent lighting during business hours with efficient LED systems"
         },
         {
           step: 3,
           description: "Equipment & Plug Loads",
           formula: "Total Energy × Equipment Percentage",
-          calculation: "16,080,000 kWh × 15%",
-          result: "2,412,000 kWh/year",
-          explanation: "Gaming equipment, computers, and miscellaneous electrical loads"
+          calculation: "16,815,500 kWh × 18%",
+          result: "3,026,790 kWh/year",
+          explanation: "Office equipment, computers, servers, and miscellaneous electrical loads for government operations"
         },
         {
           step: 4,
-          description: "Hot Water Systems",
-          formula: "Total Energy × Hot Water Percentage",
-          calculation: "16,080,000 kWh × 10%",
-          result: "1,608,000 kWh/year",
-          explanation: "Hotel operations require significant hot water for guest rooms and facilities"
+          description: "Security & Emergency Systems",
+          formula: "Total Energy × Security Percentage",
+          calculation: "16,815,500 kWh × 8%",
+          result: "1,345,240 kWh/year",
+          explanation: "Government buildings require enhanced security systems, emergency lighting, and backup power systems"
         },
         {
           step: 5,
           description: "Other Systems",
           formula: "Total Energy × Other Percentage",
-          calculation: "16,080,000 kWh × 5%",
-          result: "804,000 kWh/year",
-          explanation: "Elevators, emergency systems, exterior lighting, and miscellaneous loads"
+          calculation: "16,815,500 kWh × 5%",
+          result: "840,775 kWh/year",
+          explanation: "Elevators, water heating, exterior lighting, and miscellaneous building systems"
         }
       ]
     },
@@ -1573,6 +1579,33 @@ const DataAnalytics = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Progressive loading effects
+  useEffect(() => {
+    if (!isLoading) {
+      // Start loading satellite cards at 5 seconds with staggered timing
+      const satelliteTimings = [5000, 6000, 7000, 8000, 8500, 9000]; // Different times for each card
+      
+      satelliteTimings.forEach((delay, index) => {
+        setTimeout(() => {
+          setSatelliteCardsLoaded(prev => {
+            const newLoaded = [...prev];
+            newLoaded[index] = true;
+            return newLoaded;
+          });
+          if (index === 0) {
+            setIsCalculatingCards(false); // Stop calculating state when first card loads
+          }
+        }, delay);
+      });
+
+      // Start loading bottom sections at 10 seconds
+      setTimeout(() => {
+        setIsCalculatingBottomSections(false);
+        setBottomSectionsLoaded(true);
+      }, 10000);
+    }
+  }, [isLoading]);
+
   const cardBaseClass = "backdrop-blur-xl bg-gradient-to-br from-white/[0.08] via-blue-500/[0.05] to-white/[0.02] rounded-3xl shadow-[0_8px_32px_rgba(59,130,246,0.15)] transition-all duration-500 border border-blue-500/20 group relative overflow-hidden hover:shadow-[0_20px_40px_rgba(59,130,246,0.25)] hover:border-blue-400/30 hover:-translate-y-1";
 
   const formatCurrency = (value: number): string => {
@@ -1597,6 +1630,49 @@ const DataAnalytics = () => {
     setSelectedCalculation(calculationType);
     setShowCalculationModal(true);
   };
+
+  // Loading Animation Component for Satellite Cards
+  const SatelliteCardLoading = ({ title, color = "blue" }: { title: string; color?: string }) => (
+    <div className={`backdrop-blur-xl bg-gradient-to-br from-white/[0.08] via-blue-500/[0.05] to-white/[0.02] rounded-3xl shadow-[0_8px_32px_rgba(59,130,246,0.15)] border border-blue-500/20 p-5 h-full flex flex-col items-center justify-center transition-all duration-500 hover:shadow-[0_20px_40px_rgba(59,130,246,0.25)] hover:border-blue-400/30 hover:-translate-y-1 group relative overflow-hidden`}>
+      <div className={`absolute inset-0 bg-gradient-to-br from-blue-500/25 via-blue-600/20 to-transparent rounded-3xl`}></div>
+      <div className="relative z-10 text-center">
+        <div className={`w-16 h-16 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mx-auto mb-4`}></div>
+        <div className={`text-blue-300 text-sm font-medium mb-2`}>Calculating {title}</div>
+        <div className="space-y-2">
+          <div className={`h-3 bg-gradient-to-r from-blue-500/20 to-blue-400/20 rounded animate-pulse w-24 mx-auto`}></div>
+          <div className={`h-2 bg-gradient-to-r from-blue-400/20 to-blue-500/20 rounded animate-pulse w-16 mx-auto`}></div>
+        </div>
+        <div className="mt-4 text-xs text-blue-300/60">Processing data...</div>
+      </div>
+    </div>
+  );
+
+  // Loading Animation Component for Bottom Sections
+  const SectionLoading = ({ height = "400px" }: { height?: string }) => (
+    <div className="backdrop-blur-xl bg-gradient-to-br from-white/[0.08] via-blue-500/[0.05] to-white/[0.02] rounded-3xl shadow-[0_8px_32px_rgba(59,130,246,0.15)] border border-blue-500/20 p-8" style={{ height }}>
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-12 h-12 bg-gradient-to-r from-blue-500/40 to-cyan-500/40 rounded-2xl animate-pulse"></div>
+        <div className="space-y-2">
+          <div className="h-6 bg-gradient-to-r from-blue-400/30 to-cyan-400/30 rounded-lg animate-pulse w-48"></div>
+          <div className="h-4 bg-gradient-to-r from-gray-400/20 to-gray-500/20 rounded animate-pulse w-64"></div>
+        </div>
+      </div>
+      <div className="space-y-4">
+        <div className="h-64 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-xl animate-pulse flex items-center justify-center">
+          <div className="w-20 h-20 border-4 border-blue-400/30 border-t-blue-400 rounded-full animate-spin"></div>
+        </div>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="h-16 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-lg animate-pulse"></div>
+          <div className="h-16 bg-gradient-to-r from-cyan-500/20 to-green-500/20 rounded-lg animate-pulse"></div>
+          <div className="h-16 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-lg animate-pulse"></div>
+        </div>
+      </div>
+      <div className="mt-4 text-center">
+        <div className="text-blue-300/80 text-sm font-medium">Processing calculations...</div>
+        <div className="text-blue-300/60 text-xs mt-1">Analyzing building data</div>
+      </div>
+    </div>
+  );
 
   if (isLoading) {
     return (
@@ -1684,1066 +1760,1112 @@ const DataAnalytics = () => {
             {/* Enhanced Satellite Cards as Overlays positioned relative to smaller map */}
             {/* Top Left - Energy Use */}
             <div className="absolute top-8 left-16 w-72 h-48 z-30">
-              <div className={`${cardBaseClass} p-5 h-full group hover:scale-105`}>
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/25 via-blue-600/20 to-transparent rounded-3xl"></div>
-                <div className="absolute -top-16 -right-16 w-32 h-32 bg-gradient-to-br from-blue-500/25 to-transparent rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
-                
-                <button 
-                  onClick={() => openCalculationModal('annualEnergyUse')}
-                  className="absolute top-3 right-3 w-7 h-7 rounded-full bg-blue-500/50 flex items-center justify-center hover:bg-blue-500/70 transition-all duration-300 backdrop-blur-md border border-blue-400/60 hover:scale-110 shadow-lg shadow-blue-500/30"
-                >
-                  <MdInfoOutline className="text-blue-200 text-sm" />
-                </button>
-                
-                <div className="relative z-10 h-full flex flex-col">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 flex items-center justify-center shadow-xl shadow-blue-500/30 border border-blue-400/20">
-                      <MdElectricBolt className="text-white text-sm" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-white">Annual Energy Use</h3>
-                      <p className="text-blue-300/80 text-xs">Total Building Consumption</p>
-                    </div>
-                  </div>
+              {satelliteCardsLoaded[0] ? (
+                <div className={`${cardBaseClass} p-5 h-full group hover:scale-105`}>
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/25 via-blue-600/20 to-transparent rounded-3xl"></div>
+                  <div className="absolute -top-16 -right-16 w-32 h-32 bg-gradient-to-br from-blue-500/25 to-transparent rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
                   
-                  <div className="flex-1 flex flex-col justify-center space-y-2">
-                    <div className="bg-gradient-to-r from-blue-500/25 to-transparent rounded-lg p-2 border border-blue-500/40 backdrop-blur-md">
-                      <p className="text-lg font-bold text-white mb-1">{formatNumber(buildingData.estimatedAnnualKwh)}</p>
-                      <p className="text-blue-300/90 text-xs font-medium">kWh annually</p>
+                  <button 
+                    onClick={() => openCalculationModal('annualEnergyUse')}
+                    className="absolute top-3 right-3 w-7 h-7 rounded-full bg-blue-500/50 flex items-center justify-center hover:bg-blue-500/70 transition-all duration-300 backdrop-blur-md border border-blue-400/60 hover:scale-110 shadow-lg shadow-blue-500/30"
+                  >
+                    <MdInfoOutline className="text-blue-200 text-sm" />
+                  </button>
+                  
+                  <div className="relative z-10 h-full flex flex-col">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 flex items-center justify-center shadow-xl shadow-blue-500/30 border border-blue-400/20">
+                        <MdElectricBolt className="text-white text-sm" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-white">Annual Energy Use</h3>
+                        <p className="text-blue-300/80 text-xs">Total Building Consumption</p>
+                      </div>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-1">
-                      <div className="bg-white/15 backdrop-blur-md rounded-md p-1.5 border border-blue-500/25">
-                        <p className="text-blue-300/70 text-xs">Rate</p>
-                        <p className="text-white font-bold text-xs">${buildingData.commercialElectricityRate}/kWh</p>
+                    <div className="flex-1 flex flex-col justify-center space-y-2">
+                      <div className="bg-gradient-to-r from-blue-500/25 to-transparent rounded-lg p-2 border border-blue-500/40 backdrop-blur-md">
+                        <p className="text-lg font-bold text-white mb-1">{formatNumber(buildingData.estimatedAnnualKwh)}</p>
+                        <p className="text-blue-300/90 text-xs font-medium">kWh annually</p>
                       </div>
-                      <div className="bg-white/15 backdrop-blur-md rounded-md p-1.5 border border-blue-500/25">
-                        <p className="text-blue-300/70 text-xs">Daily Avg</p>
-                        <p className="text-white font-bold text-xs">{formatNumber(buildingData.estimatedAnnualKwh / 365)} kWh</p>
+                      
+                      <div className="grid grid-cols-2 gap-1">
+                        <div className="bg-white/15 backdrop-blur-md rounded-md p-1.5 border border-blue-500/25">
+                          <p className="text-blue-300/70 text-xs">Rate</p>
+                          <p className="text-white font-bold text-xs">${buildingData.commercialElectricityRate}/kWh</p>
+                        </div>
+                        <div className="bg-white/15 backdrop-blur-md rounded-md p-1.5 border border-blue-500/25">
+                          <p className="text-blue-300/70 text-xs">Daily Avg</p>
+                          <p className="text-white font-bold text-xs">{formatNumber(buildingData.estimatedAnnualKwh / 365)} kWh</p>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <SatelliteCardLoading title="Annual Energy Use" color="blue" />
+              )}
             </div>
 
             {/* Top Right - Energy Cost */}
             <div className="absolute top-8 right-16 w-72 h-48 z-30">
-              <div className={`${cardBaseClass} p-5 h-full group hover:scale-105`}>
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/25 via-emerald-600/20 to-transparent rounded-3xl"></div>
-                <div className="absolute -top-16 -left-16 w-32 h-32 bg-gradient-to-br from-emerald-500/25 to-transparent rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
-                
-                <button 
-                  onClick={() => openCalculationModal('annualEnergyCost')}
-                  className="absolute top-3 right-3 w-7 h-7 rounded-full bg-emerald-500/50 flex items-center justify-center hover:bg-emerald-500/70 transition-all duration-300 backdrop-blur-md border border-emerald-400/60 hover:scale-110 shadow-lg shadow-emerald-500/30"
-                >
-                  <MdInfoOutline className="text-emerald-200 text-sm" />
-                </button>
-                
-                <div className="relative z-10 h-full flex flex-col">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 flex items-center justify-center shadow-xl shadow-emerald-500/30 border border-emerald-400/20">
-                      <MdAttachMoney className="text-white text-sm" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-white">Annual Energy Cost</h3>
-                      <p className="text-emerald-300/80 text-xs">Current Expenditure</p>
-                    </div>
-                  </div>
+              {satelliteCardsLoaded[1] ? (
+                <div className={`${cardBaseClass} p-5 h-full group hover:scale-105`}>
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/25 via-emerald-600/20 to-transparent rounded-3xl"></div>
+                  <div className="absolute -top-16 -left-16 w-32 h-32 bg-gradient-to-br from-emerald-500/25 to-transparent rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
                   
-                  <div className="flex-1 flex flex-col justify-center space-y-2">
-                    <div className="bg-gradient-to-r from-emerald-500/25 to-transparent rounded-lg p-2 border border-emerald-500/40 backdrop-blur-md">
-                      <p className="text-lg font-bold text-white mb-1">{formatCurrency(buildingData.annualEnergyCost)}</p>
-                      <p className="text-emerald-300/90 text-xs font-medium">annually</p>
+                  <button 
+                    onClick={() => openCalculationModal('annualEnergyCost')}
+                    className="absolute top-3 right-3 w-7 h-7 rounded-full bg-emerald-500/50 flex items-center justify-center hover:bg-emerald-500/70 transition-all duration-300 backdrop-blur-md border border-emerald-400/60 hover:scale-110 shadow-lg shadow-emerald-500/30"
+                  >
+                    <MdInfoOutline className="text-emerald-200 text-sm" />
+                  </button>
+                  
+                  <div className="relative z-10 h-full flex flex-col">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 flex items-center justify-center shadow-xl shadow-emerald-500/30 border border-emerald-400/20">
+                        <MdAttachMoney className="text-white text-sm" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-white">Annual Energy Cost</h3>
+                        <p className="text-emerald-300/80 text-xs">Current Expenditure</p>
+                      </div>
                     </div>
                     
-                    <div className="bg-white/15 backdrop-blur-md rounded-md p-1.5 border border-emerald-500/25">
-                      <p className="text-emerald-300/70 text-xs">Monthly Average</p>
-                      <p className="text-white font-bold text-xs">{formatCurrency(buildingData.annualEnergyCost / 12)}</p>
+                    <div className="flex-1 flex flex-col justify-center space-y-2">
+                      <div className="bg-gradient-to-r from-emerald-500/25 to-transparent rounded-lg p-2 border border-emerald-500/40 backdrop-blur-md">
+                        <p className="text-lg font-bold text-white mb-1">{formatCurrency(buildingData.annualEnergyCost)}</p>
+                        <p className="text-emerald-300/90 text-xs font-medium">annually</p>
+                      </div>
+                      
+                      <div className="bg-white/15 backdrop-blur-md rounded-md p-1.5 border border-emerald-500/25">
+                        <p className="text-emerald-300/70 text-xs">Monthly Average</p>
+                        <p className="text-white font-bold text-xs">{formatCurrency(buildingData.annualEnergyCost / 12)}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <SatelliteCardLoading title="Annual Energy Cost" color="emerald" />
+              )}
             </div>
 
             {/* Left Center - Windows */}
             <div className="absolute top-1/2 left-4 transform -translate-y-1/2 w-64 h-40 z-30">
-              <div className={`${cardBaseClass} p-4 h-full group hover:scale-105`}>
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/25 via-purple-600/20 to-transparent rounded-3xl"></div>
-                <div className="absolute -bottom-16 -left-16 w-32 h-32 bg-gradient-to-br from-purple-500/25 to-transparent rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
-                
-                <button 
-                  onClick={() => openCalculationModal('windowAnalysis')}
-                  className="absolute top-3 right-3 w-7 h-7 rounded-full bg-purple-500/50 flex items-center justify-center hover:bg-purple-500/70 transition-all duration-300 backdrop-blur-md border border-purple-400/60 hover:scale-110 shadow-lg shadow-purple-500/30"
-                >
-                  <MdInfoOutline className="text-purple-200 text-sm" />
-                </button>
-                
-                <div className="relative z-10 h-full flex flex-col">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-purple-500 via-purple-600 to-purple-700 flex items-center justify-center shadow-xl shadow-purple-500/30 border border-purple-400/20">
-                      <FaWindowMaximize className="text-white text-sm" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-white">Window Analysis</h3>
-                      <p className="text-purple-300/80 text-xs">Building Envelope</p>
-                    </div>
-                  </div>
+              {satelliteCardsLoaded[2] ? (
+                <div className={`${cardBaseClass} p-4 h-full group hover:scale-105`}>
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/25 via-purple-600/20 to-transparent rounded-3xl"></div>
+                  <div className="absolute -bottom-16 -left-16 w-32 h-32 bg-gradient-to-br from-purple-500/25 to-transparent rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
                   
-                  <div className="flex-1 flex items-center gap-2">
-                    <div className="bg-gradient-to-r from-purple-500/25 to-transparent rounded-lg p-2 border border-purple-500/40 backdrop-blur-md flex-1">
-                      <p className="text-lg font-bold text-white mb-1">{buildingData.totalWindows}</p>
-                      <p className="text-purple-300/90 text-xs font-medium">Total Windows</p>
+                  <button 
+                    onClick={() => openCalculationModal('windowAnalysis')}
+                    className="absolute top-3 right-3 w-7 h-7 rounded-full bg-purple-500/50 flex items-center justify-center hover:bg-purple-500/70 transition-all duration-300 backdrop-blur-md border border-purple-400/60 hover:scale-110 shadow-lg shadow-purple-500/30"
+                  >
+                    <MdInfoOutline className="text-purple-200 text-sm" />
+                  </button>
+                  
+                  <div className="relative z-10 h-full flex flex-col">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-purple-500 via-purple-600 to-purple-700 flex items-center justify-center shadow-xl shadow-purple-500/30 border border-purple-400/20">
+                        <FaWindowMaximize className="text-white text-sm" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-white">Window Analysis</h3>
+                        <p className="text-purple-300/80 text-xs">Building Envelope</p>
+                      </div>
                     </div>
                     
-                    <div className="space-y-1">
-                      <div className="bg-white/15 backdrop-blur-md rounded-md p-1 border border-purple-500/25">
-                        <p className="text-purple-300/70 text-xs">Size</p>
-                        <p className="text-white font-bold text-xs">{buildingData.averageWindowSize}</p>
+                    <div className="flex-1 flex items-center gap-2">
+                      <div className="bg-gradient-to-r from-purple-500/25 to-transparent rounded-lg p-2 border border-purple-500/40 backdrop-blur-md flex-1">
+                        <p className="text-lg font-bold text-white mb-1">{buildingData.totalWindows}</p>
+                        <p className="text-purple-300/90 text-xs font-medium">Total Windows</p>
                       </div>
-                      <div className="bg-white/15 backdrop-blur-md rounded-md p-1 border border-purple-500/25">
-                        <p className="text-purple-300/70 text-xs">R-Value</p>
-                        <p className="text-white font-bold text-xs">R-{buildingData.currentWindowRValue}</p>
+                      
+                      <div className="space-y-1">
+                        <div className="bg-white/15 backdrop-blur-md rounded-md p-1 border border-purple-500/25">
+                          <p className="text-purple-300/70 text-xs">Size</p>
+                          <p className="text-white font-bold text-xs">{buildingData.averageWindowSize}</p>
+                        </div>
+                        <div className="bg-white/15 backdrop-blur-md rounded-md p-1 border border-purple-500/25">
+                          <p className="text-purple-300/70 text-xs">R-Value</p>
+                          <p className="text-white font-bold text-xs">R-{buildingData.currentWindowRValue}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <SatelliteCardLoading title="Window Analysis" color="purple" />
+              )}
             </div>
 
             {/* Right Center - Potential Savings */}
             <div className="absolute top-1/2 right-4 transform -translate-y-1/2 w-72 h-48 z-30">
-              <div className={`${cardBaseClass} p-5 h-full group hover:scale-105`}>
-                <div className="absolute inset-0 bg-gradient-to-br from-green-500/25 via-green-600/20 to-transparent rounded-3xl"></div>
-                <div className="absolute -top-16 -right-16 w-32 h-32 bg-gradient-to-br from-green-500/25 to-transparent rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
-                
-                <button 
-                  onClick={() => openCalculationModal('potentialSavings')}
-                  className="absolute top-3 right-3 w-7 h-7 rounded-full bg-green-500/50 flex items-center justify-center hover:bg-green-500/70 transition-all duration-300 backdrop-blur-md border border-green-400/60 hover:scale-110 shadow-lg shadow-green-500/30"
-                >
-                  <MdInfoOutline className="text-green-200 text-sm" />
-                </button>
-                
-                <div className="relative z-10 h-full flex flex-col">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-500 via-green-600 to-green-700 flex items-center justify-center shadow-xl shadow-green-500/30 border border-green-400/20">
-                      <MdOutlineEnergySavingsLeaf className="text-white text-sm" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-white">Potential Savings</h3>
-                      <p className="text-green-300/80 text-xs">Annual Energy Reduction</p>
-                    </div>
-                  </div>
+              {satelliteCardsLoaded[3] ? (
+                <div className={`${cardBaseClass} p-5 h-full group hover:scale-105`}>
+                  <div className="absolute inset-0 bg-gradient-to-br from-green-500/25 via-green-600/20 to-transparent rounded-3xl"></div>
+                  <div className="absolute -top-16 -right-16 w-32 h-32 bg-gradient-to-br from-green-500/25 to-transparent rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
                   
-                  <div className="flex-1 flex flex-col justify-center space-y-2">
-                    <div className="bg-gradient-to-r from-green-500/25 to-transparent rounded-lg p-2 border border-green-500/40 backdrop-blur-md">
-                      <p className="text-lg font-bold text-green-400 mb-1">{formatCurrency(buildingData.annualEnergySavings)}</p>
-                      <p className="text-green-300/90 text-xs font-medium">annually</p>
+                  <button 
+                    onClick={() => openCalculationModal('potentialSavings')}
+                    className="absolute top-3 right-3 w-7 h-7 rounded-full bg-green-500/50 flex items-center justify-center hover:bg-green-500/70 transition-all duration-300 backdrop-blur-md border border-green-400/60 hover:scale-110 shadow-lg shadow-green-500/30"
+                  >
+                    <MdInfoOutline className="text-green-200 text-sm" />
+                  </button>
+                  
+                  <div className="relative z-10 h-full flex flex-col">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-500 via-green-600 to-green-700 flex items-center justify-center shadow-xl shadow-green-500/30 border border-green-400/20">
+                        <MdOutlineEnergySavingsLeaf className="text-white text-sm" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-white">Potential Savings</h3>
+                        <p className="text-green-300/80 text-xs">Annual Energy Reduction</p>
+                      </div>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-1">
-                      <div className="bg-white/15 backdrop-blur-md rounded-md p-1.5 border border-green-500/25">
-                        <p className="text-green-300/70 text-xs">Reduction</p>
-                        <p className="text-white font-bold text-xs">{buildingData.energyCostReduction}%</p>
+                    <div className="flex-1 flex flex-col justify-center space-y-2">
+                      <div className="bg-gradient-to-r from-green-500/25 to-transparent rounded-lg p-2 border border-green-500/40 backdrop-blur-md">
+                        <p className="text-lg font-bold text-green-400 mb-1">{formatCurrency(buildingData.annualEnergySavings)}</p>
+                        <p className="text-green-300/90 text-xs font-medium">annually</p>
                       </div>
-                      <div className="bg-white/15 backdrop-blur-md rounded-md p-1.5 border border-green-500/25">
-                        <p className="text-green-300/70 text-xs">Monthly</p>
-                        <p className="text-white font-bold text-xs">{formatCurrency(buildingData.annualEnergySavings / 12)}</p>
+                      
+                      <div className="grid grid-cols-2 gap-1">
+                        <div className="bg-white/15 backdrop-blur-md rounded-md p-1.5 border border-green-500/25">
+                          <p className="text-green-300/70 text-xs">Reduction</p>
+                          <p className="text-white font-bold text-xs">{buildingData.energyCostReduction}%</p>
+                        </div>
+                        <div className="bg-white/15 backdrop-blur-md rounded-md p-1.5 border border-green-500/25">
+                          <p className="text-green-300/70 text-xs">Monthly</p>
+                          <p className="text-white font-bold text-xs">{formatCurrency(buildingData.annualEnergySavings / 12)}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <SatelliteCardLoading title="Potential Savings" color="green" />
+              )}
             </div>
 
             {/* Bottom Left - ROI */}
             <div className="absolute bottom-8 left-16 w-64 h-44 z-30">
-              <div className={`${cardBaseClass} p-4 h-full group hover:scale-105`}>
-                <div className="absolute inset-0 bg-gradient-to-br from-orange-500/25 via-orange-600/20 to-transparent rounded-3xl"></div>
-                <div className="absolute -bottom-16 -right-16 w-32 h-32 bg-gradient-to-br from-orange-500/25 to-transparent rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
-                
-                <button 
-                  onClick={() => openCalculationModal('windowPerformanceComparison')}
-                  className="absolute top-3 right-3 w-7 h-7 rounded-full bg-orange-500/50 flex items-center justify-center hover:bg-orange-500/70 transition-all duration-300 backdrop-blur-md border border-orange-400/60 hover:scale-110 shadow-lg shadow-orange-500/30"
-                >
-                  <MdInfoOutline className="text-orange-200 text-sm" />
-                </button>
-                
-                <div className="relative z-10 h-full flex flex-col">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 flex items-center justify-center shadow-xl shadow-orange-500/30 border border-orange-400/20">
-                      <MdTrendingUp className="text-white text-sm" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-white">Return on Investment</h3>
-                      <p className="text-orange-300/80 text-xs">Financial Performance</p>
-                    </div>
-                  </div>
+              {satelliteCardsLoaded[4] ? (
+                <div className={`${cardBaseClass} p-4 h-full group hover:scale-105`}>
+                  <div className="absolute inset-0 bg-gradient-to-br from-orange-500/25 via-orange-600/20 to-transparent rounded-3xl"></div>
+                  <div className="absolute -bottom-16 -right-16 w-32 h-32 bg-gradient-to-br from-orange-500/25 to-transparent rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
                   
-                  <div className="flex-1 flex items-center gap-2">
-                    <div className="bg-gradient-to-r from-orange-500/25 to-transparent rounded-lg p-2 border border-orange-500/40 backdrop-blur-md flex-1">
-                      <p className="text-lg font-bold text-orange-400 mb-1">{buildingData.paybackPeriod.toFixed(1)}</p>
-                      <p className="text-orange-300/90 text-xs font-medium">years payback</p>
+                  <button 
+                    onClick={() => openCalculationModal('windowPerformanceComparison')}
+                    className="absolute top-3 right-3 w-7 h-7 rounded-full bg-orange-500/50 flex items-center justify-center hover:bg-orange-500/70 transition-all duration-300 backdrop-blur-md border border-orange-400/60 hover:scale-110 shadow-lg shadow-orange-500/30"
+                  >
+                    <MdInfoOutline className="text-orange-200 text-sm" />
+                  </button>
+                  
+                  <div className="relative z-10 h-full flex flex-col">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 flex items-center justify-center shadow-xl shadow-orange-500/30 border border-orange-400/20">
+                        <MdTrendingUp className="text-white text-sm" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-white">Return on Investment</h3>
+                        <p className="text-orange-300/80 text-xs">Financial Performance</p>
+                      </div>
                     </div>
                     
-                    <div className="bg-white/15 backdrop-blur-md rounded-md p-2 border border-orange-500/25">
-                      <p className="text-orange-300/70 text-xs">Annual ROI</p>
-                      <p className="text-white font-bold text-sm">{Math.round((1/buildingData.paybackPeriod) * 100)}%</p>
+                    <div className="flex-1 flex items-center gap-2">
+                      <div className="bg-gradient-to-r from-orange-500/25 to-transparent rounded-lg p-2 border border-orange-500/40 backdrop-blur-md flex-1">
+                        <p className="text-lg font-bold text-orange-400 mb-1">{buildingData.paybackPeriod.toFixed(1)}</p>
+                        <p className="text-orange-300/90 text-xs font-medium">years payback</p>
+                      </div>
+                      
+                      <div className="bg-white/15 backdrop-blur-md rounded-md p-2 border border-orange-500/25">
+                        <p className="text-orange-300/70 text-xs">Annual ROI</p>
+                        <p className="text-white font-bold text-sm">{Math.round((1/buildingData.paybackPeriod) * 100)}%</p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <SatelliteCardLoading title="ROI Analysis" color="orange" />
+              )}
             </div>
 
             {/* Bottom Right - Installation */}
             <div className="absolute bottom-8 right-16 w-72 h-48 z-30">
-              <div className={`${cardBaseClass} p-5 h-full group hover:scale-105`}>
-                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/25 via-cyan-600/20 to-transparent rounded-3xl"></div>
-                <div className="absolute -top-16 -left-16 w-32 h-32 bg-gradient-to-br from-cyan-500/25 to-transparent rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
-                
-                <button 
-                  onClick={() => openCalculationModal('recommendedSolution')}
-                  className="absolute top-3 right-3 w-7 h-7 rounded-full bg-cyan-500/50 flex items-center justify-center hover:bg-cyan-500/70 transition-all duration-300 backdrop-blur-md border border-cyan-400/60 hover:scale-110 shadow-lg shadow-cyan-500/30"
-                >
-                  <MdInfoOutline className="text-cyan-200 text-sm" />
-                </button>
-                
-                <div className="relative z-10 h-full flex flex-col">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 via-cyan-600 to-cyan-700 flex items-center justify-center shadow-xl shadow-cyan-500/30 border border-cyan-400/20">
-                      <MdOutlineSettings className="text-white text-sm" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-white">Installation</h3>
-                      <p className="text-cyan-300/80 text-xs">Project Investment</p>
-                    </div>
-                  </div>
+              {satelliteCardsLoaded[5] ? (
+                <div className={`${cardBaseClass} p-5 h-full group hover:scale-105`}>
+                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/25 via-cyan-600/20 to-transparent rounded-3xl"></div>
+                  <div className="absolute -top-16 -left-16 w-32 h-32 bg-gradient-to-br from-cyan-500/25 to-transparent rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
                   
-                  <div className="flex-1 flex flex-col justify-center space-y-2">
-                    <div className="bg-gradient-to-r from-cyan-500/25 to-transparent rounded-lg p-2 border border-cyan-500/40 backdrop-blur-md">
-                      <p className="text-lg font-bold text-cyan-400 mb-1">{formatCurrency(buildingData.installationCost)}</p>
-                      <p className="text-cyan-300/90 text-xs font-medium">total investment</p>
+                  <button 
+                    onClick={() => openCalculationModal('recommendedSolution')}
+                    className="absolute top-3 right-3 w-7 h-7 rounded-full bg-cyan-500/50 flex items-center justify-center hover:bg-cyan-500/70 transition-all duration-300 backdrop-blur-md border border-cyan-400/60 hover:scale-110 shadow-lg shadow-cyan-500/30"
+                  >
+                    <MdInfoOutline className="text-cyan-200 text-sm" />
+                  </button>
+                  
+                  <div className="relative z-10 h-full flex flex-col">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 via-cyan-600 to-cyan-700 flex items-center justify-center shadow-xl shadow-cyan-500/30 border border-cyan-400/20">
+                        <MdOutlineSettings className="text-white text-sm" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-white">Installation</h3>
+                        <p className="text-cyan-300/80 text-xs">Project Investment</p>
+                      </div>
                     </div>
                     
-                    <div className="space-y-1">
-                      <div className="bg-white/15 backdrop-blur-md rounded-md p-1.5 border border-cyan-500/25">
-                        <p className="text-cyan-300/70 text-xs">Product</p>
-                        <p className="text-white font-bold text-xs">{buildingData.luxwallProductRecommendation}</p>
+                    <div className="flex-1 flex flex-col justify-center space-y-2">
+                      <div className="bg-gradient-to-r from-cyan-500/25 to-transparent rounded-lg p-2 border border-cyan-500/40 backdrop-blur-md">
+                        <p className="text-lg font-bold text-cyan-400 mb-1">{formatCurrency(buildingData.installationCost)}</p>
+                        <p className="text-cyan-300/90 text-xs font-medium">total investment</p>
                       </div>
-                      <div className="bg-white/15 backdrop-blur-md rounded-md p-1.5 border border-cyan-500/25">
-                        <p className="text-cyan-300/70 text-xs">Per Window</p>
-                        <p className="text-white font-bold text-xs">{formatCurrency(buildingData.installationCost / buildingData.totalWindows)}</p>
+                      
+                      <div className="space-y-1">
+                        <div className="bg-white/15 backdrop-blur-md rounded-md p-1.5 border border-cyan-500/25">
+                          <p className="text-cyan-300/70 text-xs">Product</p>
+                          <p className="text-white font-bold text-xs">{buildingData.luxwallProductRecommendation}</p>
+                        </div>
+                        <div className="bg-white/15 backdrop-blur-md rounded-md p-1.5 border border-cyan-500/25">
+                          <p className="text-cyan-300/70 text-xs">Per Window</p>
+                          <p className="text-white font-bold text-xs">{formatCurrency(buildingData.installationCost / buildingData.totalWindows)}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <SatelliteCardLoading title="Installation Plan" color="cyan" />
+              )}
             </div>
           </div>
 
           {/* Enhanced Detailed Analysis Sections */}
           
-          {/* Energy Overview Section */}
-          <div className="mb-12">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-500/25 border border-blue-400/20">
-                <MdAnalytics className="text-white text-2xl" />
-              </div>
-              <div>
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-white via-blue-100 to-blue-200 bg-clip-text text-transparent">Energy Overview</h2>
-                <p className="text-blue-300/70 text-sm">Comprehensive energy consumption analysis</p>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-12 gap-8">
-              {/* Energy Breakdown Chart - Large */}
-              <div className={`${cardBaseClass} p-8 relative group col-span-8`}>
-                {/* Enhanced background effects */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/8 via-blue-600/4 to-transparent rounded-3xl"></div>
-                <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-blue-500/20 to-transparent rounded-full blur-3xl group-hover:scale-110 transition-transform duration-500"></div>
-                
-                <button 
-                  onClick={() => openCalculationModal('energyOverview')}
-                  className="absolute top-6 right-6 w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center hover:bg-blue-500/40 transition-all duration-300 backdrop-blur-md border border-blue-400/30 hover:scale-110"
-                >
-                  <MdInfoOutline className="text-blue-400 text-lg" />
-                </button>
-                
-                <div className="relative z-10">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
-                      <FaChartBar className="text-white text-xl" />
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-bold text-white">Energy Consumption</h3>
-                      <p className="text-blue-300/70 text-sm">Current vs Optimized Breakdown</p>
-                    </div>
-                  </div>
-                  
-                  <div className="h-80 bg-gradient-to-br from-white/[0.03] to-transparent rounded-2xl p-4 border border-blue-500/10">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={energyBreakdown} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                        <defs>
-                          <linearGradient id="currentGradient" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8}/>
-                            <stop offset="95%" stopColor="#dc2626" stopOpacity={0.9}/>
-                          </linearGradient>
-                          <linearGradient id="optimizedGradient" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
-                            <stop offset="95%" stopColor="#1d4ed8" stopOpacity={0.9}/>
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(59, 130, 246, 0.2)" opacity={0.5} />
-                        <XAxis 
-                          dataKey="category" 
-                          tick={{ fill: '#cbd5e1', fontSize: 12 }} 
-                          axisLine={{ stroke: 'rgba(59, 130, 246, 0.3)' }}
-                          tickLine={{ stroke: 'rgba(59, 130, 246, 0.3)' }}
-                        />
-                        <YAxis 
-                          tick={{ fill: '#cbd5e1', fontSize: 12 }} 
-                          axisLine={{ stroke: 'rgba(59, 130, 246, 0.3)' }}
-                          tickLine={{ stroke: 'rgba(59, 130, 246, 0.3)' }}
-                        />
-                        <Tooltip 
-                          formatter={(value, name) => [formatCurrency(Number(value)), name]}
-                          contentStyle={{ 
-                            backgroundColor: 'rgba(15, 23, 42, 0.95)', 
-                            borderRadius: '1rem', 
-                            border: '1px solid rgba(59, 130, 246, 0.4)',
-                            backdropFilter: 'blur(20px)',
-                            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)',
-                            color: 'white'
-                          }}
-                          labelStyle={{ color: '#93c5fd', fontWeight: 'bold' }}
-                        />
-                        <Bar dataKey="current" name="Current Cost" fill="url(#currentGradient)" radius={[4, 4, 0, 0]} />
-                        <Bar dataKey="optimized" name="Optimized Cost" fill="url(#optimizedGradient)" radius={[4, 4, 0, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-              </div>
-
-              {/* Window Energy Loss Pie Chart - Compact */}
-              <div className={`${cardBaseClass} p-8 relative group col-span-4`}>
-                {/* Enhanced background effects */}
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/8 via-purple-600/4 to-transparent rounded-3xl"></div>
-                <div className="absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-br from-purple-500/20 to-transparent rounded-full blur-3xl group-hover:scale-110 transition-transform duration-500"></div>
-                
-                <button 
-                  onClick={() => openCalculationModal('energyLossDistribution')}
-                  className="absolute top-6 right-6 w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center hover:bg-purple-500/40 transition-all duration-300 backdrop-blur-md border border-purple-400/30 hover:scale-110"
-                >
-                  <MdInfoOutline className="text-purple-400 text-lg" />
-                </button>
-                
-                <div className="relative z-10">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/25">
-                      <FaWindowMaximize className="text-white text-xl" />
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-bold text-white">Energy Loss Distribution</h3>
-                      <p className="text-purple-300/70 text-sm">Window-related energy costs</p>
-                    </div>
-                  </div>
-                  
-                  <div className="h-80 bg-gradient-to-br from-white/[0.03] to-transparent rounded-2xl p-4 border border-purple-500/10 flex items-center justify-center">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <defs>
-                          <linearGradient id="coolingGradient" x1="0" y1="0" x2="1" y2="1">
-                            <stop offset="0%" stopColor="#dc2626" stopOpacity={0.9}/>
-                            <stop offset="100%" stopColor="#b91c1c" stopOpacity={1}/>
-                          </linearGradient>
-                          <linearGradient id="heatGradient" x1="0" y1="0" x2="1" y2="1">
-                            <stop offset="0%" stopColor="#ea580c" stopOpacity={0.9}/>
-                            <stop offset="100%" stopColor="#c2410c" stopOpacity={1}/>
-                          </linearGradient>
-                          <linearGradient id="efficientGradient" x1="0" y1="0" x2="1" y2="1">
-                            <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.9}/>
-                            <stop offset="100%" stopColor="#1d4ed8" stopOpacity={1}/>
-                          </linearGradient>
-                        </defs>
-                        <Pie
-                          data={[
-                            { name: 'Cooling Loss', value: buildingData.windowCoolingCost, color: 'url(#coolingGradient)' },
-                            { name: 'Heat Loss', value: buildingData.windowHeatLossCost, color: 'url(#heatGradient)' },
-                            { name: 'Efficient Operation', value: buildingData.annualEnergyCost - buildingData.totalWindowEnergyCost, color: 'url(#efficientGradient)' }
-                          ]}
-                          cx="50%"
-                          cy="50%"
-                          outerRadius={120}
-                          innerRadius={60}
-                          dataKey="value"
-                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
-                          labelLine={false}
-                          stroke="rgba(255, 255, 255, 0.1)"
-                          strokeWidth={2}
-                        >
-                          <Cell fill="url(#coolingGradient)" />
-                          <Cell fill="url(#heatGradient)" />
-                          <Cell fill="url(#efficientGradient)" />
-                        </Pie>
-                        <Tooltip 
-                          formatter={(value) => formatCurrency(Number(value))}
-                          contentStyle={{ 
-                            backgroundColor: 'rgba(15, 23, 42, 0.95)', 
-                            borderRadius: '1rem', 
-                            border: '1px solid rgba(147, 51, 234, 0.4)',
-                            backdropFilter: 'blur(20px)',
-                            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)',
-                            color: 'white'
-                          }}
-                          labelStyle={{ color: '#c4b5fd', fontWeight: 'bold' }}
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Climate Analysis Section */}
-          <div className="mb-12">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 flex items-center justify-center shadow-lg shadow-emerald-500/25 border border-emerald-400/20">
-                <MdThermostat className="text-white text-2xl" />
-              </div>
-              <div>
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-white via-emerald-100 to-emerald-200 bg-clip-text text-transparent">Climate Analysis</h2>
-                <p className="text-emerald-300/70 text-sm">Detroit climate impact on building performance</p>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-12 gap-8">
-              {/* Monthly Temperature Chart - Tall */}
-              <div className={`${cardBaseClass} p-8 relative group col-span-5`}>
-                <button 
-                  onClick={() => openCalculationModal('climateAnalysis')}
-                  className="absolute top-6 right-6 w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center hover:bg-emerald-500/40 transition-all duration-300 backdrop-blur-md border border-emerald-400/30 hover:scale-110 shadow-lg shadow-emerald-500/20"
-                >
-                  <MdInfoOutline className="text-emerald-400 text-lg" />
-                </button>
-                <div className="relative">
-                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <MdThermostat className="text-emerald-500" />
-                    Monthly Temperature Analysis
-                  </h3>
-                </div>
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={monthlyTemperatures}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
-                      <XAxis dataKey="month" tick={{ fill: '#9CA3AF' }} />
-                      <YAxis tick={{ fill: '#9CA3AF' }} />
-                      <Tooltip 
-                        formatter={(value, name) => [`${value}°C`, name]}
-                        contentStyle={{ 
-                          backgroundColor: 'rgba(20, 20, 25, 0.9)', 
-                          borderRadius: '0.5rem', 
-                          border: '1px solid rgba(59, 130, 246, 0.3)'
-                        }}
-                      />
-                      <Line type="monotone" dataKey="high" stroke="#dc2626" strokeWidth={3} name="High Temp" />
-                      <Line type="monotone" dataKey="low" stroke="#3b82f6" strokeWidth={3} name="Low Temp" />
-                      <Line type="monotone" dataKey="delta" stroke="#1d4ed8" strokeWidth={2} name="Delta" />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-
-              {/* Solar Irradiance Chart - Wide */}
-              <div className={`${cardBaseClass} p-8 relative group col-span-7`}>
-                <button 
-                  onClick={() => openCalculationModal('solarIrradianceImpact')}
-                  className="absolute top-6 right-6 w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center hover:bg-emerald-500/40 transition-all duration-300 backdrop-blur-md border border-emerald-400/30 hover:scale-110 shadow-lg shadow-emerald-500/20"
-                >
-                  <MdInfoOutline className="text-emerald-400 text-lg" />
-                </button>
-                <div className="relative">
-                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <MdSolarPower className="text-emerald-500" />
-                    Solar Irradiance Impact
-                  </h3>
-                </div>
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={monthlyTemperatures}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
-                      <XAxis dataKey="month" tick={{ fill: '#9CA3AF' }} />
-                      <YAxis tick={{ fill: '#9CA3AF' }} />
-                      <Tooltip 
-                        formatter={(value) => [`${value} kWh/m²/day`, 'Solar Irradiance']}
-                        contentStyle={{ 
-                          backgroundColor: 'rgba(20, 20, 25, 0.9)', 
-                          borderRadius: '0.5rem', 
-                          border: '1px solid rgba(59, 130, 246, 0.3)'
-                        }}
-                      />
-                      <Area 
-                        type="monotone" 
-                        dataKey="solar" 
-                        stroke="#3b82f6" 
-                        fill="url(#solarGradient)" 
-                        strokeWidth={2}
-                      />
-                      <defs>
-                        <linearGradient id="solarGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
-                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1}/>
-                        </linearGradient>
-                      </defs>
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Window Analysis Section */}
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1e40af] to-[#3b82f6] flex items-center justify-center shadow-lg">
-                <FaWindowMaximize className="text-white text-xl" />
-              </div>
-              <h2 className="text-2xl font-bold text-white">Window Analysis</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Window Efficiency Comparison */}
-              <div className={`${cardBaseClass} p-6 relative`}>
-                <button 
-                  onClick={() => openCalculationModal('windowPerformanceComparison')}
-                  className="absolute top-6 right-6 w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center hover:bg-purple-500/40 transition-all duration-300 backdrop-blur-md border border-purple-400/30 hover:scale-110 shadow-lg shadow-purple-500/20 z-10"
-                >
-                  <MdInfoOutline className="text-purple-400 text-lg" />
-                </button>
-                <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                  <FaWindowMaximize className="text-[#3b82f6]" />
-                  Window Performance Comparison
-                </h3>
-                <div className="space-y-4">
-                  {windowEfficiencyData.map((item, index) => {
-                    const improvementPercentage = item.metric === 'R-Value' 
-                      ? ((item.optimized - item.current) / item.current) * 100
-                      : ((item.current - item.optimized) / item.current) * 100;
-                    
-                    const progressWidth = item.metric === 'R-Value' 
-                      ? Math.min(100, (item.optimized / item.current) * 10)
-                      : Math.min(100, improvementPercentage);
-
-                    return (
-                      <div key={index} className="bg-white/5 rounded-lg p-4 border border-white/10 hover:border-blue-500/30 transition-all duration-300">
-                        <div className="flex justify-between items-center mb-3">
-                          <span className="text-white font-medium">{item.metric}</span>
-                          <div className="flex gap-4">
-                            <div className="text-right">
-                              <p className="text-red-400 text-sm">Current</p>
-                              <p className="text-white font-bold">
-                                {item.unit === 'USD' ? formatCurrency(item.current) : item.current}
-                                {item.unit && item.unit !== 'USD' && ` ${item.unit}`}
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-blue-400 text-sm">Optimized</p>
-                              <p className="text-blue-400 font-bold">
-                                {item.unit === 'USD' ? formatCurrency(item.optimized) : item.optimized}
-                                {item.unit && item.unit !== 'USD' && ` ${item.unit}`}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center gap-3 mb-2">
-                          <div className="flex-1 bg-white/10 rounded-full h-3 relative overflow-hidden">
-                            <div 
-                              className="bg-gradient-to-r from-emerald-500 to-blue-500 h-3 rounded-full transition-all duration-1000 relative"
-                              style={{ width: `${progressWidth}%` }}
-                            >
-                              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-full"></div>
-                            </div>
-                          </div>
-                          <div className="text-right min-w-[60px]">
-                            <span className="text-emerald-400 font-bold text-sm">
-                              {item.metric === 'R-Value' ? '+' : '-'}{Math.abs(improvementPercentage).toFixed(0)}%
-                            </span>
-                          </div>
-                        </div>
-                        
-                        <div className="text-xs text-slate-400">
-                          {item.metric === 'R-Value' 
-                            ? `${(item.optimized / item.current).toFixed(1)}x better insulation performance`
-                            : `${improvementPercentage.toFixed(0)}% reduction in ${item.metric.toLowerCase()}`
-                          }
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* LuxWall Product Recommendation */}
-              <div className={`${cardBaseClass} p-6 relative`}>
-                <button 
-                  onClick={() => openCalculationModal('recommendedSolution')}
-                  className="absolute top-6 right-6 w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center hover:bg-blue-500/40 transition-all duration-300 backdrop-blur-md border border-blue-400/30 hover:scale-110 shadow-lg shadow-blue-500/20 z-10"
-                >
-                  <MdInfoOutline className="text-blue-400 text-lg" />
-                </button>
-                <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                  <FaRegLightbulb className="text-[#3b82f6]" />
-                  Recommended Solution
-                </h3>
-                <div className="bg-gradient-to-br from-[#3b82f6]/20 to-[#1e40af]/10 rounded-xl p-6 border border-[#3b82f6]/30">
-                  <div className="text-center mb-6">
-                    <h4 className="text-2xl font-bold text-white mb-2">{buildingData.luxwallProductRecommendation}</h4>
-                    <p className="text-white/70">Advanced Energy-Efficient Window Solution</p>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div className="text-center">
-                      <p className="text-3xl font-bold text-[#3b82f6]">{buildingData.newRValue}</p>
-                      <p className="text-white/70 text-sm">R-Value</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-3xl font-bold text-[#3b82f6]">{buildingData.efficiencyImprovement}%</p>
-                      <p className="text-white/70 text-sm">Efficiency Gain</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-white/70">Installation Cost:</span>
-                      <span className="text-white font-bold">{formatCurrency(buildingData.installationCost)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-white/70">Annual Savings:</span>
-                      <span className="text-[#3b82f6] font-bold">{formatCurrency(buildingData.annualEnergySavings)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-white/70">Payback Period:</span>
-                      <span className="text-[#3b82f6] font-bold">{buildingData.paybackPeriod.toFixed(1)} years</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ROI Calculation Section */}
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1e40af] to-[#3b82f6] flex items-center justify-center shadow-lg">
-                <MdOutlineCalculate className="text-white text-xl" />
-              </div>
-              <h2 className="text-2xl font-bold text-white">ROI Analysis & Projections</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              {/* ROI Timeline Chart */}
-              <div className={`${cardBaseClass} p-6 relative`}>
-                <button 
-                  onClick={() => openCalculationModal('potentialSavings')}
-                  className="absolute top-6 right-6 w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center hover:bg-green-500/40 transition-all duration-300 backdrop-blur-md border border-green-400/30 hover:scale-110 shadow-lg shadow-green-500/20 z-10"
-                >
-                  <MdInfoOutline className="text-green-400 text-lg" />
-                </button>
-                <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                  <MdTrendingUp className="text-[#3b82f6]" />
-                  25-Year ROI Projection
-                </h3>
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={roiTimelineData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
-                      <XAxis dataKey="year" tick={{ fill: '#9CA3AF', fontSize: 12 }} />
-                      <YAxis tick={{ fill: '#9CA3AF', fontSize: 12 }} />
-                      <Tooltip 
-                        formatter={(value, name) => [
-                          name === 'cumulative' ? formatCurrency(Number(value)) : `${value}%`,
-                          name === 'cumulative' ? 'Cumulative Savings' : 'ROI %'
-                        ]}
-                        contentStyle={{ 
-                          backgroundColor: 'rgba(20, 20, 25, 0.9)', 
-                          borderRadius: '0.5rem', 
-                          border: '1px solid rgba(59, 130, 246, 0.3)',
-                          backdropFilter: 'blur(10px)'
-                        }}
-                      />
-                      <Line 
-                        type="monotone" 
-                        dataKey="cumulative" 
-                        stroke="#3b82f6" 
-                        strokeWidth={3} 
-                        name="Cumulative Savings"
-                      />
-                      <Line 
-                        type="monotone" 
-                        dataKey="roi" 
-                        stroke="#10b981" 
-                        strokeWidth={2} 
-                        name="ROI %"
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-
-              {/* Monthly Savings Breakdown */}
-              <div className={`${cardBaseClass} p-6 relative`}>
-                <button 
-                  onClick={() => openCalculationModal('potentialSavings')}
-                  className="absolute top-6 right-6 w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center hover:bg-orange-500/40 transition-all duration-300 backdrop-blur-md border border-orange-400/30 hover:scale-110 shadow-lg shadow-orange-500/20 z-10"
-                >
-                  <MdInfoOutline className="text-orange-400 text-lg" />
-                </button>
-                <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                  <MdOutlineShowChart className="text-[#3b82f6]" />
-                  Monthly Savings Breakdown
-                </h3>
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={monthlySavingsData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
-                      <XAxis dataKey="month" tick={{ fill: '#9CA3AF', fontSize: 12 }} />
-                      <YAxis tick={{ fill: '#9CA3AF', fontSize: 12 }} />
-                      <Tooltip 
-                        formatter={(value, name) => [formatCurrency(Number(value)), name]}
-                        contentStyle={{ 
-                          backgroundColor: 'rgba(20, 20, 25, 0.9)', 
-                          borderRadius: '0.5rem', 
-                          border: '1px solid rgba(59, 130, 246, 0.3)',
-                          backdropFilter: 'blur(10px)'
-                        }}
-                      />
-                      <Bar dataKey="heating" name="Heating Savings" fill="#dc2626" stackId="a" />
-                      <Bar dataKey="cooling" name="Cooling Savings" fill="#3b82f6" stackId="a" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            </div>
-
-            <div className={`${cardBaseClass} p-8 relative overflow-hidden`}>
-              {/* Enhanced background effects */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/8 via-blue-600/4 to-transparent rounded-3xl"></div>
-              <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-blue-500/20 to-transparent rounded-full blur-3xl group-hover:scale-110 transition-transform duration-500"></div>
-              <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-gradient-to-br from-blue-600/15 to-transparent rounded-full blur-3xl"></div>
-              
-              <button 
-                onClick={() => openCalculationModal('potentialSavings')}
-                className="absolute top-6 right-6 w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center hover:bg-blue-500/40 transition-all duration-300 backdrop-blur-md border border-blue-400/30 hover:scale-110 shadow-lg shadow-blue-500/20 z-10"
-              >
-                <MdInfoOutline className="text-blue-400 text-lg" />
-              </button>
-              
-              <div className="relative z-10">
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
-                    <MdOutlineCalculate className="text-white text-xl" />
+          {bottomSectionsLoaded ? (
+            <>
+              {/* Energy Overview Section */}
+              <div className="mb-12">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-500/25 border border-blue-400/20">
+                    <MdAnalytics className="text-white text-2xl" />
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold text-white">ROI Calculation Flow</h3>
-                    <p className="text-blue-300/70 text-sm">Interactive investment analysis breakdown</p>
+                    <h2 className="text-3xl font-bold bg-gradient-to-r from-white via-blue-100 to-blue-200 bg-clip-text text-transparent">Energy Overview</h2>
+                    <p className="text-blue-300/70 text-sm">Comprehensive energy consumption analysis</p>
                   </div>
                 </div>
+                
+                <div className="grid grid-cols-12 gap-8">
+                  {/* Energy Breakdown Chart - Large */}
+                  <div className={`${cardBaseClass} p-8 relative group col-span-8`}>
+                    {/* Enhanced background effects */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/8 via-blue-600/4 to-transparent rounded-3xl"></div>
+                    <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-blue-500/20 to-transparent rounded-full blur-3xl group-hover:scale-110 transition-transform duration-500"></div>
+                    
+                    <button 
+                      onClick={() => openCalculationModal('energyOverview')}
+                      className="absolute top-6 right-6 w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center hover:bg-blue-500/40 transition-all duration-300 backdrop-blur-md border border-blue-400/30 hover:scale-110"
+                    >
+                      <MdInfoOutline className="text-blue-400 text-lg" />
+                    </button>
+                    
+                    <div className="relative z-10">
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
+                          <FaChartBar className="text-white text-xl" />
+                        </div>
+                        <div>
+                          <h3 className="text-2xl font-bold text-white">Energy Consumption</h3>
+                          <p className="text-blue-300/70 text-sm">Current vs Optimized Breakdown</p>
+                        </div>
+                      </div>
+                      
+                      <div className="h-80 bg-gradient-to-br from-white/[0.03] to-transparent rounded-2xl p-4 border border-blue-500/10">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={energyBreakdown} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                            <defs>
+                              <linearGradient id="currentGradient" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8}/>
+                                <stop offset="95%" stopColor="#dc2626" stopOpacity={0.9}/>
+                              </linearGradient>
+                              <linearGradient id="optimizedGradient" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
+                                <stop offset="95%" stopColor="#1d4ed8" stopOpacity={0.9}/>
+                              </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(59, 130, 246, 0.2)" opacity={0.5} />
+                            <XAxis 
+                              dataKey="category" 
+                              tick={{ fill: '#cbd5e1', fontSize: 12 }} 
+                              axisLine={{ stroke: 'rgba(59, 130, 246, 0.3)' }}
+                              tickLine={{ stroke: 'rgba(59, 130, 246, 0.3)' }}
+                            />
+                            <YAxis 
+                              tick={{ fill: '#cbd5e1', fontSize: 12 }} 
+                              axisLine={{ stroke: 'rgba(59, 130, 246, 0.3)' }}
+                              tickLine={{ stroke: 'rgba(59, 130, 246, 0.3)' }}
+                            />
+                            <Tooltip 
+                              formatter={(value, name) => [formatCurrency(Number(value)), name]}
+                              contentStyle={{ 
+                                backgroundColor: 'rgba(15, 23, 42, 0.95)', 
+                                borderRadius: '1rem', 
+                                border: '1px solid rgba(59, 130, 246, 0.4)',
+                                backdropFilter: 'blur(20px)',
+                                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)',
+                                color: 'white'
+                              }}
+                              labelStyle={{ color: '#93c5fd', fontWeight: 'bold' }}
+                            />
+                            <Bar dataKey="current" name="Current Cost" fill="url(#currentGradient)" radius={[4, 4, 0, 0]} />
+                            <Bar dataKey="optimized" name="Optimized Cost" fill="url(#optimizedGradient)" radius={[4, 4, 0, 0]} />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                  </div>
 
-                {/* Visual Flow Chart */}
-                <div className="relative mb-8">
-                  {/* Connection Lines */}
-                  <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ height: '400px' }}>
-                    <defs>
-                      <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="rgba(59, 130, 246, 0.6)"/>
-                        <stop offset="100%" stopColor="rgba(59, 130, 246, 0.2)"/>
-                      </linearGradient>
-                    </defs>
-                    {/* Flowing connections between steps */}
-                    <path d="M 120 60 Q 200 60 280 60" stroke="url(#flowGradient)" strokeWidth="2" fill="none" strokeDasharray="5,5">
-                      <animate attributeName="stroke-dashoffset" values="0;10" dur="2s" repeatCount="indefinite"/>
-                    </path>
-                    <path d="M 400 60 Q 480 60 560 60" stroke="url(#flowGradient)" strokeWidth="2" fill="none" strokeDasharray="5,5">
-                      <animate attributeName="stroke-dashoffset" values="0;10" dur="2s" repeatCount="indefinite"/>
-                    </path>
-                    <path d="M 120 180 Q 200 180 280 180" stroke="url(#flowGradient)" strokeWidth="2" fill="none" strokeDasharray="5,5">
-                      <animate attributeName="stroke-dashoffset" values="0;10" dur="2s" repeatCount="indefinite"/>
-                    </path>
-                    <path d="M 400 180 Q 480 180 560 180" stroke="url(#flowGradient)" strokeWidth="2" fill="none" strokeDasharray="5,5">
-                      <animate attributeName="stroke-dashoffset" values="0;10" dur="2s" repeatCount="indefinite"/>
-                    </path>
-                    <path d="M 120 300 Q 200 300 280 300" stroke="url(#flowGradient)" strokeWidth="2" fill="none" strokeDasharray="5,5">
-                      <animate attributeName="stroke-dashoffset" values="0;10" dur="2s" repeatCount="indefinite"/>
-                    </path>
-                    <path d="M 400 300 Q 480 300 560 300" stroke="url(#flowGradient)" strokeWidth="2" fill="none" strokeDasharray="5,5">
-                      <animate attributeName="stroke-dashoffset" values="0;10" dur="2s" repeatCount="indefinite"/>
-                    </path>
-                  </svg>
+                  {/* Window Energy Loss Pie Chart - Compact */}
+                  <div className={`${cardBaseClass} p-8 relative group col-span-4`}>
+                    {/* Enhanced background effects */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/8 via-purple-600/4 to-transparent rounded-3xl"></div>
+                    <div className="absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-br from-purple-500/20 to-transparent rounded-full blur-3xl group-hover:scale-110 transition-transform duration-500"></div>
+                    
+                    <button 
+                      onClick={() => openCalculationModal('energyLossDistribution')}
+                      className="absolute top-6 right-6 w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center hover:bg-purple-500/40 transition-all duration-300 backdrop-blur-md border border-purple-400/30 hover:scale-110"
+                    >
+                      <MdInfoOutline className="text-purple-400 text-lg" />
+                    </button>
+                    
+                    <div className="relative z-10">
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/25">
+                          <FaWindowMaximize className="text-white text-xl" />
+                        </div>
+                        <div>
+                          <h3 className="text-2xl font-bold text-white">Energy Loss Distribution</h3>
+                          <p className="text-purple-300/70 text-sm">Window-related energy costs</p>
+                        </div>
+                      </div>
+                      
+                      <div className="h-80 bg-gradient-to-br from-white/[0.03] to-transparent rounded-2xl p-4 border border-purple-500/10 flex items-center justify-center">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <defs>
+                              <linearGradient id="coolingGradient" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stopColor="#dc2626" stopOpacity={0.9}/>
+                                <stop offset="100%" stopColor="#b91c1c" stopOpacity={1}/>
+                              </linearGradient>
+                              <linearGradient id="heatGradient" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stopColor="#ea580c" stopOpacity={0.9}/>
+                                <stop offset="100%" stopColor="#c2410c" stopOpacity={1}/>
+                              </linearGradient>
+                              <linearGradient id="efficientGradient" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.9}/>
+                                <stop offset="100%" stopColor="#1d4ed8" stopOpacity={1}/>
+                              </linearGradient>
+                            </defs>
+                            <Pie
+                              data={[
+                                { name: 'Cooling Loss', value: buildingData.windowCoolingCost, color: 'url(#coolingGradient)' },
+                                { name: 'Heat Loss', value: buildingData.windowHeatLossCost, color: 'url(#heatGradient)' },
+                                { name: 'Efficient Operation', value: buildingData.annualEnergyCost - buildingData.totalWindowEnergyCost, color: 'url(#efficientGradient)' }
+                              ]}
+                              cx="50%"
+                              cy="50%"
+                              outerRadius={120}
+                              innerRadius={60}
+                              dataKey="value"
+                              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
+                              labelLine={false}
+                              stroke="rgba(255, 255, 255, 0.1)"
+                              strokeWidth={2}
+                            >
+                              <Cell fill="url(#coolingGradient)" />
+                              <Cell fill="url(#heatGradient)" />
+                              <Cell fill="url(#efficientGradient)" />
+                            </Pie>
+                            <Tooltip 
+                              formatter={(value) => formatCurrency(Number(value))}
+                              contentStyle={{ 
+                                backgroundColor: 'rgba(15, 23, 42, 0.95)', 
+                                borderRadius: '1rem', 
+                                border: '1px solid rgba(147, 51, 234, 0.4)',
+                                backdropFilter: 'blur(20px)',
+                                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)',
+                                color: 'white'
+                              }}
+                              labelStyle={{ color: '#c4b5fd', fontWeight: 'bold' }}
+                            />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-                  {/* ROI Steps in a 3x2 Grid */}
-                  <div className="grid grid-cols-3 gap-6 relative z-10" style={{ height: '400px' }}>
-                    {roiCalculationSteps.map((step, index) => (
-                      <div key={index} className="relative group">
-                        <div className="bg-gradient-to-br from-white/[0.08] via-blue-500/[0.05] to-white/[0.02] rounded-2xl p-4 border border-blue-500/20 hover:border-blue-400/40 transition-all duration-300 hover:scale-105 backdrop-blur-md shadow-lg shadow-blue-500/10 h-full flex flex-col">
-                          {/* Step number with glow */}
-                          <div className="flex items-center gap-3 mb-3">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-blue-500/30 rounded-full blur-md"></div>
-                              <div className="relative w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-lg">
-                                {step.step}
+              {/* Climate Analysis Section */}
+              <div className="mb-12">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 flex items-center justify-center shadow-lg shadow-emerald-500/25 border border-emerald-400/20">
+                    <MdThermostat className="text-white text-2xl" />
+                  </div>
+                  <div>
+                    <h2 className="text-3xl font-bold bg-gradient-to-r from-white via-emerald-100 to-emerald-200 bg-clip-text text-transparent">Climate Analysis</h2>
+                    <p className="text-emerald-300/70 text-sm">Detroit climate impact on building performance</p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-12 gap-8">
+                  {/* Monthly Temperature Chart - Tall */}
+                  <div className={`${cardBaseClass} p-8 relative group col-span-5`}>
+                    <button 
+                      onClick={() => openCalculationModal('climateAnalysis')}
+                      className="absolute top-6 right-6 w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center hover:bg-emerald-500/40 transition-all duration-300 backdrop-blur-md border border-emerald-400/30 hover:scale-110 shadow-lg shadow-emerald-500/20"
+                    >
+                      <MdInfoOutline className="text-emerald-400 text-lg" />
+                    </button>
+                    <div className="relative">
+                      <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                        <MdThermostat className="text-emerald-500" />
+                        Monthly Temperature Analysis
+                      </h3>
+                    </div>
+                    <div className="h-80">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={monthlyTemperatures}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                          <XAxis dataKey="month" tick={{ fill: '#9CA3AF' }} />
+                          <YAxis tick={{ fill: '#9CA3AF' }} />
+                          <Tooltip 
+                            formatter={(value, name) => [`${value}°C`, name]}
+                            contentStyle={{ 
+                              backgroundColor: 'rgba(20, 20, 25, 0.9)', 
+                              borderRadius: '0.5rem', 
+                              border: '1px solid rgba(59, 130, 246, 0.3)'
+                            }}
+                          />
+                          <Line type="monotone" dataKey="high" stroke="#dc2626" strokeWidth={3} name="High Temp" />
+                          <Line type="monotone" dataKey="low" stroke="#3b82f6" strokeWidth={3} name="Low Temp" />
+                          <Line type="monotone" dataKey="delta" stroke="#1d4ed8" strokeWidth={2} name="Delta" />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+
+                  {/* Solar Irradiance Chart - Wide */}
+                  <div className={`${cardBaseClass} p-8 relative group col-span-7`}>
+                    <button 
+                      onClick={() => openCalculationModal('solarIrradianceImpact')}
+                      className="absolute top-6 right-6 w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center hover:bg-emerald-500/40 transition-all duration-300 backdrop-blur-md border border-emerald-400/30 hover:scale-110 shadow-lg shadow-emerald-500/20"
+                    >
+                      <MdInfoOutline className="text-emerald-400 text-lg" />
+                    </button>
+                    <div className="relative">
+                      <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                        <MdSolarPower className="text-emerald-500" />
+                        Solar Irradiance Impact
+                      </h3>
+                    </div>
+                    <div className="h-80">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={monthlyTemperatures}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                          <XAxis dataKey="month" tick={{ fill: '#9CA3AF' }} />
+                          <YAxis tick={{ fill: '#9CA3AF' }} />
+                          <Tooltip 
+                            formatter={(value) => [`${value} kWh/m²/day`, 'Solar Irradiance']}
+                            contentStyle={{ 
+                              backgroundColor: 'rgba(20, 20, 25, 0.9)', 
+                              borderRadius: '0.5rem', 
+                              border: '1px solid rgba(59, 130, 246, 0.3)'
+                            }}
+                          />
+                          <Area 
+                            type="monotone" 
+                            dataKey="solar" 
+                            stroke="#3b82f6" 
+                            fill="url(#solarGradient)" 
+                            strokeWidth={2}
+                          />
+                          <defs>
+                            <linearGradient id="solarGradient" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
+                              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1}/>
+                            </linearGradient>
+                          </defs>
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Window Analysis Section */}
+              <div className="mb-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1e40af] to-[#3b82f6] flex items-center justify-center shadow-lg">
+                    <FaWindowMaximize className="text-white text-xl" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white">Window Analysis</h2>
+                </div>
+                
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Window Efficiency Comparison */}
+                  <div className={`${cardBaseClass} p-6 relative`}>
+                    <button 
+                      onClick={() => openCalculationModal('windowPerformanceComparison')}
+                      className="absolute top-6 right-6 w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center hover:bg-purple-500/40 transition-all duration-300 backdrop-blur-md border border-purple-400/30 hover:scale-110 shadow-lg shadow-purple-500/20 z-10"
+                    >
+                      <MdInfoOutline className="text-purple-400 text-lg" />
+                    </button>
+                    <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                      <FaWindowMaximize className="text-[#3b82f6]" />
+                      Window Performance Comparison
+                    </h3>
+                    <div className="space-y-4">
+                      {windowEfficiencyData.map((item, index) => {
+                        const improvementPercentage = item.metric === 'R-Value' 
+                          ? ((item.optimized - item.current) / item.current) * 100
+                          : ((item.current - item.optimized) / item.current) * 100;
+                        
+                        const progressWidth = item.metric === 'R-Value' 
+                          ? Math.min(100, (item.optimized / item.current) * 10)
+                          : Math.min(100, improvementPercentage);
+
+                        return (
+                          <div key={index} className="bg-white/5 rounded-lg p-4 border border-white/10 hover:border-blue-500/30 transition-all duration-300">
+                            <div className="flex justify-between items-center mb-3">
+                              <span className="text-white font-medium">{item.metric}</span>
+                              <div className="flex gap-4">
+                                <div className="text-right">
+                                  <p className="text-red-400 text-sm">Current</p>
+                                  <p className="text-white font-bold">
+                                    {item.unit === 'USD' ? formatCurrency(item.current) : item.current}
+                                    {item.unit && item.unit !== 'USD' && ` ${item.unit}`}
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-blue-400 text-sm">Optimized</p>
+                                  <p className="text-blue-400 font-bold">
+                                    {item.unit === 'USD' ? formatCurrency(item.optimized) : item.optimized}
+                                    {item.unit && item.unit !== 'USD' && ` ${item.unit}`}
+                                  </p>
+                                </div>
                               </div>
                             </div>
-                            <div className="flex-1">
-                              <h4 className="text-white font-semibold text-sm leading-tight">{step.description}</h4>
-                            </div>
-                          </div>
-                          
-                          {/* Value with emphasis */}
-                          <div className="flex-1 flex flex-col justify-center">
-                            <div className="text-center mb-2">
-                              <p className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-blue-300 to-blue-400 bg-clip-text text-transparent">
-                                {step.step === 6 ? `${step.value} years` : formatCurrency(step.value)}
-                              </p>
+                            
+                            <div className="flex items-center gap-3 mb-2">
+                              <div className="flex-1 bg-white/10 rounded-full h-3 relative overflow-hidden">
+                                <div 
+                                  className="bg-gradient-to-r from-emerald-500 to-blue-500 h-3 rounded-full transition-all duration-1000 relative"
+                                  style={{ width: `${progressWidth}%` }}
+                                >
+                                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-full"></div>
+                                </div>
+                              </div>
+                              <div className="text-right min-w-[60px]">
+                                <span className="text-emerald-400 font-bold text-sm">
+                                  {item.metric === 'R-Value' ? '+' : '-'}{Math.abs(improvementPercentage).toFixed(0)}%
+                                </span>
+                              </div>
                             </div>
                             
-                            {/* Formula preview */}
-                            <div className="bg-black/20 rounded-lg p-2 border border-blue-500/10">
-                              <p className="text-blue-300/80 text-xs font-mono text-center">{step.formula}</p>
+                            <div className="text-xs text-slate-400">
+                              {item.metric === 'R-Value' 
+                                ? `${(item.optimized / item.current).toFixed(1)}x better insulation performance`
+                                : `${improvementPercentage.toFixed(0)}% reduction in ${item.metric.toLowerCase()}`
+                              }
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* LuxWall Product Recommendation */}
+                  <div className={`${cardBaseClass} p-6 relative`}>
+                    <button 
+                      onClick={() => openCalculationModal('recommendedSolution')}
+                      className="absolute top-6 right-6 w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center hover:bg-blue-500/40 transition-all duration-300 backdrop-blur-md border border-blue-400/30 hover:scale-110 shadow-lg shadow-blue-500/20 z-10"
+                    >
+                      <MdInfoOutline className="text-blue-400 text-lg" />
+                    </button>
+                    <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                      <FaRegLightbulb className="text-[#3b82f6]" />
+                      Recommended Solution
+                    </h3>
+                    <div className="bg-gradient-to-br from-[#3b82f6]/20 to-[#1e40af]/10 rounded-xl p-6 border border-[#3b82f6]/30">
+                      <div className="text-center mb-6">
+                        <h4 className="text-2xl font-bold text-white mb-2">{buildingData.luxwallProductRecommendation}</h4>
+                        <p className="text-white/70">Advanced Energy-Efficient Window Solution</p>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4 mb-6">
+                        <div className="text-center">
+                          <p className="text-3xl font-bold text-[#3b82f6]">{buildingData.newRValue}</p>
+                          <p className="text-white/70 text-sm">R-Value</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-3xl font-bold text-[#3b82f6]">{buildingData.efficiencyImprovement}%</p>
+                          <p className="text-white/70 text-sm">Efficiency Gain</p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className="flex justify-between">
+                          <span className="text-white/70">Installation Cost:</span>
+                          <span className="text-white font-bold">{formatCurrency(buildingData.installationCost)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-white/70">Annual Savings:</span>
+                          <span className="text-[#3b82f6] font-bold">{formatCurrency(buildingData.annualEnergySavings)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-white/70">Payback Period:</span>
+                          <span className="text-[#3b82f6] font-bold">{buildingData.paybackPeriod.toFixed(1)} years</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* ROI Calculation Section */}
+              <div className="mb-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1e40af] to-[#3b82f6] flex items-center justify-center shadow-lg">
+                    <MdOutlineCalculate className="text-white text-xl" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white">ROI Analysis & Projections</h2>
+                </div>
+                
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                  {/* ROI Timeline Chart */}
+                  <div className={`${cardBaseClass} p-6 relative`}>
+                    <button 
+                      onClick={() => openCalculationModal('potentialSavings')}
+                      className="absolute top-6 right-6 w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center hover:bg-green-500/40 transition-all duration-300 backdrop-blur-md border border-green-400/30 hover:scale-110 shadow-lg shadow-green-500/20 z-10"
+                    >
+                      <MdInfoOutline className="text-green-400 text-lg" />
+                    </button>
+                    <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                      <MdTrendingUp className="text-[#3b82f6]" />
+                      25-Year ROI Projection
+                    </h3>
+                    <div className="h-80">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={roiTimelineData}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                          <XAxis dataKey="year" tick={{ fill: '#9CA3AF', fontSize: 12 }} />
+                          <YAxis tick={{ fill: '#9CA3AF', fontSize: 12 }} />
+                          <Tooltip 
+                            formatter={(value, name) => [
+                              name === 'cumulative' ? formatCurrency(Number(value)) : `${value}%`,
+                              name === 'cumulative' ? 'Cumulative Savings' : 'ROI %'
+                            ]}
+                            contentStyle={{ 
+                              backgroundColor: 'rgba(20, 20, 25, 0.9)', 
+                              borderRadius: '0.5rem', 
+                              border: '1px solid rgba(59, 130, 246, 0.3)',
+                              backdropFilter: 'blur(10px)'
+                            }}
+                          />
+                          <Line 
+                            type="monotone" 
+                            dataKey="cumulative" 
+                            stroke="#3b82f6" 
+                            strokeWidth={3} 
+                            name="Cumulative Savings"
+                          />
+                          <Line 
+                            type="monotone" 
+                            dataKey="roi" 
+                            stroke="#10b981" 
+                            strokeWidth={2} 
+                            name="ROI %"
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+
+                  {/* Monthly Savings Breakdown */}
+                  <div className={`${cardBaseClass} p-6 relative`}>
+                    <button 
+                      onClick={() => openCalculationModal('potentialSavings')}
+                      className="absolute top-6 right-6 w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center hover:bg-orange-500/40 transition-all duration-300 backdrop-blur-md border border-orange-400/30 hover:scale-110 shadow-lg shadow-orange-500/20 z-10"
+                    >
+                      <MdInfoOutline className="text-orange-400 text-lg" />
+                    </button>
+                    <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                      <MdOutlineShowChart className="text-[#3b82f6]" />
+                      Monthly Savings Breakdown
+                    </h3>
+                    <div className="h-80">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={monthlySavingsData}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                          <XAxis dataKey="month" tick={{ fill: '#9CA3AF', fontSize: 12 }} />
+                          <YAxis tick={{ fill: '#9CA3AF', fontSize: 12 }} />
+                          <Tooltip 
+                            formatter={(value, name) => [formatCurrency(Number(value)), name]}
+                            contentStyle={{ 
+                              backgroundColor: 'rgba(20, 20, 25, 0.9)', 
+                              borderRadius: '0.5rem', 
+                              border: '1px solid rgba(59, 130, 246, 0.3)',
+                              backdropFilter: 'blur(10px)'
+                            }}
+                          />
+                          <Bar dataKey="heating" name="Heating Savings" fill="#dc2626" stackId="a" />
+                          <Bar dataKey="cooling" name="Cooling Savings" fill="#3b82f6" stackId="a" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={`${cardBaseClass} p-8 relative overflow-hidden`}>
+                  {/* Enhanced background effects */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/8 via-blue-600/4 to-transparent rounded-3xl"></div>
+                  <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-blue-500/20 to-transparent rounded-full blur-3xl group-hover:scale-110 transition-transform duration-500"></div>
+                  <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-gradient-to-br from-blue-600/15 to-transparent rounded-full blur-3xl"></div>
+                  
+                  <button 
+                    onClick={() => openCalculationModal('potentialSavings')}
+                    className="absolute top-6 right-6 w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center hover:bg-blue-500/40 transition-all duration-300 backdrop-blur-md border border-blue-400/30 hover:scale-110 shadow-lg shadow-blue-500/20 z-10"
+                  >
+                    <MdInfoOutline className="text-blue-400 text-lg" />
+                  </button>
+                  
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-3 mb-8">
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
+                        <MdOutlineCalculate className="text-white text-xl" />
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold text-white">ROI Calculation Flow</h3>
+                        <p className="text-blue-300/70 text-sm">Interactive investment analysis breakdown</p>
+                      </div>
+                    </div>
+
+                    {/* Visual Flow Chart */}
+                    <div className="relative mb-8">
+                      {/* Connection Lines */}
+                      <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ height: '400px' }}>
+                        <defs>
+                          <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="rgba(59, 130, 246, 0.6)"/>
+                            <stop offset="100%" stopColor="rgba(59, 130, 246, 0.2)"/>
+                          </linearGradient>
+                        </defs>
+                        {/* Flowing connections between steps */}
+                        <path d="M 120 60 Q 200 60 280 60" stroke="url(#flowGradient)" strokeWidth="2" fill="none" strokeDasharray="5,5">
+                          <animate attributeName="stroke-dashoffset" values="0;10" dur="2s" repeatCount="indefinite"/>
+                        </path>
+                        <path d="M 400 60 Q 480 60 560 60" stroke="url(#flowGradient)" strokeWidth="2" fill="none" strokeDasharray="5,5">
+                          <animate attributeName="stroke-dashoffset" values="0;10" dur="2s" repeatCount="indefinite"/>
+                        </path>
+                        <path d="M 120 180 Q 200 180 280 180" stroke="url(#flowGradient)" strokeWidth="2" fill="none" strokeDasharray="5,5">
+                          <animate attributeName="stroke-dashoffset" values="0;10" dur="2s" repeatCount="indefinite"/>
+                        </path>
+                        <path d="M 400 180 Q 480 180 560 180" stroke="url(#flowGradient)" strokeWidth="2" fill="none" strokeDasharray="5,5">
+                          <animate attributeName="stroke-dashoffset" values="0;10" dur="2s" repeatCount="indefinite"/>
+                        </path>
+                        <path d="M 120 300 Q 200 300 280 300" stroke="url(#flowGradient)" strokeWidth="2" fill="none" strokeDasharray="5,5">
+                          <animate attributeName="stroke-dashoffset" values="0;10" dur="2s" repeatCount="indefinite"/>
+                        </path>
+                        <path d="M 400 300 Q 480 300 560 300" stroke="url(#flowGradient)" strokeWidth="2" fill="none" strokeDasharray="5,5">
+                          <animate attributeName="stroke-dashoffset" values="0;10" dur="2s" repeatCount="indefinite"/>
+                        </path>
+                      </svg>
+
+                      {/* ROI Steps in a 3x2 Grid */}
+                      <div className="grid grid-cols-3 gap-6 relative z-10" style={{ height: '400px' }}>
+                        {roiCalculationSteps.map((step, index) => (
+                          <div key={index} className="relative group">
+                            <div className="bg-gradient-to-br from-white/[0.08] via-blue-500/[0.05] to-white/[0.02] rounded-2xl p-4 border border-blue-500/20 hover:border-blue-400/40 transition-all duration-300 hover:scale-105 backdrop-blur-md shadow-lg shadow-blue-500/10 h-full flex flex-col">
+                              {/* Step number with glow */}
+                              <div className="flex items-center gap-3 mb-3">
+                                <div className="relative">
+                                  <div className="absolute inset-0 bg-blue-500/30 rounded-full blur-md"></div>
+                                  <div className="relative w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-lg">
+                                    {step.step}
+                                  </div>
+                                </div>
+                                <div className="flex-1">
+                                  <h4 className="text-white font-semibold text-sm leading-tight">{step.description}</h4>
+                                </div>
+                              </div>
+                              
+                              {/* Value with emphasis */}
+                              <div className="flex-1 flex flex-col justify-center">
+                                <div className="text-center mb-2">
+                                  <p className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-blue-300 to-blue-400 bg-clip-text text-transparent">
+                                    {step.step === 6 ? `${step.value} years` : formatCurrency(step.value)}
+                                  </p>
+                                </div>
+                                
+                                {/* Formula preview */}
+                                <div className="bg-black/20 rounded-lg p-2 border border-blue-500/10">
+                                  <p className="text-blue-300/80 text-xs font-mono text-center">{step.formula}</p>
+                                </div>
+                              </div>
+                              
+                              {/* Hover effect overlay */}
+                              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Enhanced Investment Summary */}
+                    <div className="bg-gradient-to-br from-blue-500/15 via-blue-600/10 to-blue-500/5 rounded-3xl p-8 border border-blue-400/30 relative overflow-hidden">
+                      {/* Background pattern */}
+                      <div className="absolute inset-0 opacity-5">
+                        <div className="absolute inset-0" 
+                          style={{
+                            backgroundImage: 'radial-gradient(circle at 20px 20px, rgba(59, 130, 246, 0.3) 1px, transparent 0)',
+                            backgroundSize: '40px 40px'
+                          }}
+                        ></div>
+                      </div>
+                      
+                      <div className="relative z-10">
+                        <div className="text-center mb-6">
+                          <h4 className="text-3xl font-bold bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent mb-2">Investment Summary</h4>
+                          <p className="text-blue-300/70">Key financial metrics for decision making</p>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                          <div className="text-center group">
+                            <div className="bg-gradient-to-br from-white/[0.08] to-white/[0.02] rounded-2xl p-4 border border-blue-500/20 hover:border-blue-400/40 transition-all duration-300 hover:scale-105 backdrop-blur-md">
+                              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-green-500/25">
+                                <MdOutlineEnergySavingsLeaf className="text-white text-xl" />
+                              </div>
+                              <p className="text-3xl font-bold text-green-400 mb-1">{formatCurrency(buildingData.annualEnergySavings)}</p>
+                              <p className="text-white/70 text-sm">Annual Savings</p>
                             </div>
                           </div>
                           
-                          {/* Hover effect overlay */}
-                          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                          <div className="text-center group">
+                            <div className="bg-gradient-to-br from-white/[0.08] to-white/[0.02] rounded-2xl p-4 border border-blue-500/20 hover:border-blue-400/40 transition-all duration-300 hover:scale-105 backdrop-blur-md">
+                              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-orange-500/25">
+                                <MdAccessTime className="text-white text-xl" />
+                              </div>
+                              <p className="text-3xl font-bold text-orange-400 mb-1">{buildingData.paybackPeriod.toFixed(1)}</p>
+                              <p className="text-white/70 text-sm">Years Payback</p>
+                            </div>
+                          </div>
+                          
+                          <div className="text-center group">
+                            <div className="bg-gradient-to-br from-white/[0.08] to-white/[0.02] rounded-2xl p-4 border border-blue-500/20 hover:border-blue-400/40 transition-all duration-300 hover:scale-105 backdrop-blur-md">
+                              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-blue-500/25">
+                                <MdTrendingUp className="text-white text-xl" />
+                              </div>
+                              <p className="text-3xl font-bold text-blue-400 mb-1">{Math.round((1/buildingData.paybackPeriod) * 100)}%</p>
+                              <p className="text-white/70 text-sm">Annual ROI</p>
+                            </div>
+                          </div>
+                          
+                          <div className="text-center group">
+                            <div className="bg-gradient-to-br from-white/[0.08] to-white/[0.02] rounded-2xl p-4 border border-blue-500/20 hover:border-blue-400/40 transition-all duration-300 hover:scale-105 backdrop-blur-md">
+                              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-purple-500/25">
+                                <MdAttachMoney className="text-white text-xl" />
+                              </div>
+                              <p className="text-3xl font-bold text-purple-400 mb-1">{formatCurrency(roiTimelineData[9].cumulative)}</p>
+                              <p className="text-white/70 text-sm">10-Year Value</p>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    ))}
+                    </div>
                   </div>
                 </div>
+              </div>
 
-                {/* Enhanced Investment Summary */}
-                <div className="bg-gradient-to-br from-blue-500/15 via-blue-600/10 to-blue-500/5 rounded-3xl p-8 border border-blue-400/30 relative overflow-hidden">
-                  {/* Background pattern */}
-                  <div className="absolute inset-0 opacity-5">
-                    <div className="absolute inset-0" 
-                      style={{
-                        backgroundImage: 'radial-gradient(circle at 20px 20px, rgba(59, 130, 246, 0.3) 1px, transparent 0)',
-                        backgroundSize: '40px 40px'
-                      }}
-                    ></div>
+              {/* Multi-Building Analysis Pipeline Section */}
+              <div className="mb-12">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-cyan-500 via-cyan-600 to-cyan-700 flex items-center justify-center shadow-lg shadow-cyan-500/25 border border-cyan-400/20">
+                    <FaDatabase className="text-white text-2xl" />
                   </div>
-                  
+                  <div>
+                    <h2 className="text-3xl font-bold bg-gradient-to-r from-white via-cyan-100 to-cyan-200 bg-clip-text text-transparent">Analysis Applied Across Database</h2>
+                    <p className="text-cyan-300/70 text-sm">Same analysis applied to all 2,547 buildings from enriched database</p>
+                  </div>
+                </div>
+                
+                <div className={`${cardBaseClass} p-8 relative overflow-hidden`}>
                   <div className="relative z-10">
-                    <div className="text-center mb-6">
-                      <h4 className="text-3xl font-bold bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent mb-2">Investment Summary</h4>
-                      <p className="text-blue-300/70">Key financial metrics for decision making</p>
+                    <div className="flex items-center justify-between mb-6">
+                      <div>
+                        <h3 className="text-xl font-bold text-white mb-2">Sample Analysis Results</h3>
+                        <p className="text-cyan-300/70 text-sm">Showing 6 of 2,547 analyzed buildings</p>
+                      </div>
                     </div>
                     
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                      <div className="text-center group">
-                        <div className="bg-gradient-to-br from-white/[0.08] to-white/[0.02] rounded-2xl p-4 border border-blue-500/20 hover:border-blue-400/40 transition-all duration-300 hover:scale-105 backdrop-blur-md">
-                          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-green-500/25">
-                            <MdOutlineEnergySavingsLeaf className="text-white text-xl" />
-                          </div>
-                          <p className="text-3xl font-bold text-green-400 mb-1">{formatCurrency(buildingData.annualEnergySavings)}</p>
-                          <p className="text-white/70 text-sm">Annual Savings</p>
-                        </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b border-cyan-500/20">
+                            <th className="text-left py-3 px-4 text-cyan-300 font-semibold text-sm">Company</th>
+                            <th className="text-left py-3 px-4 text-cyan-300 font-semibold text-sm">Location</th>
+                            <th className="text-left py-3 px-4 text-cyan-300 font-semibold text-sm">Building Type</th>
+                            <th className="text-right py-3 px-4 text-cyan-300 font-semibold text-sm">Annual Savings</th>
+                            <th className="text-right py-3 px-4 text-cyan-300 font-semibold text-sm">Payback</th>
+                            <th className="text-center py-3 px-4 text-cyan-300 font-semibold text-sm">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className="border-b border-cyan-500/10 hover:bg-cyan-500/5 transition-colors">
+                            <td className="py-4 px-4">
+                              <div className="font-medium text-white">Coleman A. Young Municipal Building</div>
+                              <div className="text-cyan-300/60 text-xs">Government Building</div>
+                            </td>
+                            <td className="py-4 px-4 text-white/80">Detroit, MI</td>
+                            <td className="py-4 px-4 text-white/80">Government</td>
+                            <td className="py-4 px-4 text-right">
+                              <span className="text-green-400 font-bold">$482K</span>
+                            </td>
+                            <td className="py-4 px-4 text-right">
+                              <span className="text-orange-400 font-bold">1.2 years</span>
+                            </td>
+                            <td className="py-4 px-4 text-center">
+                              <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded-full text-xs font-medium">Complete</span>
+                            </td>
+                          </tr>
+                          <tr className="border-b border-cyan-500/10 hover:bg-cyan-500/5 transition-colors">
+                            <td className="py-4 px-4">
+                              <div className="font-medium text-white">Jeffersonian Apartments</div>
+                              <div className="text-cyan-300/60 text-xs">Residential High-Rise</div>
+                            </td>
+                            <td className="py-4 px-4 text-white/80">Detroit, MI</td>
+                            <td className="py-4 px-4 text-white/80">Residential</td>
+                            <td className="py-4 px-4 text-right">
+                              <span className="text-green-400 font-bold">$2.1M</span>
+                            </td>
+                            <td className="py-4 px-4 text-right">
+                              <span className="text-orange-400 font-bold">1.0 years</span>
+                            </td>
+                            <td className="py-4 px-4 text-center">
+                              <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded-full text-xs font-medium">Complete</span>
+                            </td>
+                          </tr>
+                          <tr className="border-b border-cyan-500/10 hover:bg-cyan-500/5 transition-colors">
+                            <td className="py-4 px-4">
+                              <div className="font-medium text-white">Ford Motor Company</div>
+                              <div className="text-cyan-300/60 text-xs">Manufacturing Complex</div>
+                            </td>
+                            <td className="py-4 px-4 text-white/80">Dearborn, MI</td>
+                            <td className="py-4 px-4 text-white/80">Manufacturing</td>
+                            <td className="py-4 px-4 text-right">
+                              <span className="text-green-400 font-bold">$2.4M</span>
+                            </td>
+                            <td className="py-4 px-4 text-right">
+                              <span className="text-orange-400 font-bold">0.9 years</span>
+                            </td>
+                            <td className="py-4 px-4 text-center">
+                              <span className="bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded-full text-xs font-medium animate-pulse">Processing</span>
+                            </td>
+                          </tr>
+                          <tr className="border-b border-cyan-500/10 hover:bg-cyan-500/5 transition-colors">
+                            <td className="py-4 px-4">
+                              <div className="font-medium text-white">General Motors</div>
+                              <div className="text-cyan-300/60 text-xs">Corporate Headquarters</div>
+                            </td>
+                            <td className="py-4 px-4 text-white/80">Detroit, MI</td>
+                            <td className="py-4 px-4 text-white/80">Office Complex</td>
+                            <td className="py-4 px-4 text-right">
+                              <span className="text-green-400 font-bold">$1.8M</span>
+                            </td>
+                            <td className="py-4 px-4 text-right">
+                              <span className="text-orange-400 font-bold">1.2 years</span>
+                            </td>
+                            <td className="py-4 px-4 text-center">
+                              <span className="bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded-full text-xs font-medium animate-pulse">Processing</span>
+                            </td>
+                          </tr>
+                          <tr className="border-b border-cyan-500/10 hover:bg-cyan-500/5 transition-colors">
+                            <td className="py-4 px-4">
+                              <div className="font-medium text-white">Henry Ford Health</div>
+                              <div className="text-cyan-300/60 text-xs">Medical Center</div>
+                            </td>
+                            <td className="py-4 px-4 text-white/80">Detroit, MI</td>
+                            <td className="py-4 px-4 text-white/80">Healthcare</td>
+                            <td className="py-4 px-4 text-right">
+                              <span className="text-green-400 font-bold">$3.1M</span>
+                            </td>
+                            <td className="py-4 px-4 text-right">
+                              <span className="text-orange-400 font-bold">1.1 years</span>
+                            </td>
+                            <td className="py-4 px-4 text-center">
+                              <span className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full text-xs font-medium">Queued</span>
+                            </td>
+                          </tr>
+                          <tr className="hover:bg-cyan-500/5 transition-colors">
+                            <td className="py-4 px-4">
+                              <div className="font-medium text-white">Quicken Loans</div>
+                              <div className="text-cyan-300/60 text-xs">Corporate Tower</div>
+                            </td>
+                            <td className="py-4 px-4 text-white/80">Detroit, MI</td>
+                            <td className="py-4 px-4 text-white/80">Office</td>
+                            <td className="py-4 px-4 text-right">
+                              <span className="text-green-400 font-bold">$890K</span>
+                            </td>
+                            <td className="py-4 px-4 text-right">
+                              <span className="text-orange-400 font-bold">1.4 years</span>
+                            </td>
+                            <td className="py-4 px-4 text-center">
+                              <span className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full text-xs font-medium">Queued</span>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    
+                    <div className="mt-6 flex items-center justify-between">
+                      <div className="text-cyan-300/70 text-sm">
+                        Showing 6 of 2,547 analyzed buildings
                       </div>
-                      
-                      <div className="text-center group">
-                        <div className="bg-gradient-to-br from-white/[0.08] to-white/[0.02] rounded-2xl p-4 border border-blue-500/20 hover:border-blue-400/40 transition-all duration-300 hover:scale-105 backdrop-blur-md">
-                          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-orange-500/25">
-                            <MdAccessTime className="text-white text-xl" />
-                          </div>
-                          <p className="text-3xl font-bold text-orange-400 mb-1">{buildingData.paybackPeriod.toFixed(1)}</p>
-                          <p className="text-white/70 text-sm">Years Payback</p>
-                        </div>
-                      </div>
-                      
-                      <div className="text-center group">
-                        <div className="bg-gradient-to-br from-white/[0.08] to-white/[0.02] rounded-2xl p-4 border border-blue-500/20 hover:border-blue-400/40 transition-all duration-300 hover:scale-105 backdrop-blur-md">
-                          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-blue-500/25">
-                            <MdTrendingUp className="text-white text-xl" />
-                          </div>
-                          <p className="text-3xl font-bold text-blue-400 mb-1">{Math.round((1/buildingData.paybackPeriod) * 100)}%</p>
-                          <p className="text-white/70 text-sm">Annual ROI</p>
-                        </div>
-                      </div>
-                      
-                      <div className="text-center group">
-                        <div className="bg-gradient-to-br from-white/[0.08] to-white/[0.02] rounded-2xl p-4 border border-blue-500/20 hover:border-blue-400/40 transition-all duration-300 hover:scale-105 backdrop-blur-md">
-                          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-purple-500/25">
-                            <MdAttachMoney className="text-white text-xl" />
-                          </div>
-                          <p className="text-3xl font-bold text-purple-400 mb-1">{formatCurrency(roiTimelineData[9].cumulative)}</p>
-                          <p className="text-white/70 text-sm">10-Year Value</p>
+                      <div className="flex gap-2">
+                        <div className="join">
+                          <button className="join-item btn btn-sm bg-[#28292b]/80 hover:bg-[#28292b] text-white border-cyan-500/20">«</button>
+                          <button className="join-item btn btn-sm bg-cyan-500 text-white border-cyan-500">1</button>
+                          <button className="join-item btn btn-sm bg-[#28292b]/80 hover:bg-[#28292b] text-white border-cyan-500/20">2</button>
+                          <button className="join-item btn btn-sm bg-[#28292b]/80 hover:bg-[#28292b] text-white border-cyan-500/20">3</button>
+                          <button className="join-item btn btn-sm bg-[#28292b]/80 hover:bg-[#28292b] text-white border-cyan-500/20">»</button>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* Multi-Building Analysis Pipeline Section */}
-          <div className="mb-12">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-cyan-500 via-cyan-600 to-cyan-700 flex items-center justify-center shadow-lg shadow-cyan-500/25 border border-cyan-400/20">
-                <FaDatabase className="text-white text-2xl" />
+            </>
+          ) : (
+            <>
+              <div className="mb-8">
+                <SectionLoading height="400px" />
               </div>
-              <div>
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-white via-cyan-100 to-cyan-200 bg-clip-text text-transparent">Analysis Applied Across Database</h2>
-                <p className="text-cyan-300/70 text-sm">Same analysis applied to all 2,547 buildings from enriched database</p>
+              <div className="mb-8">
+                <SectionLoading height="300px" />
               </div>
-            </div>
-            
-            <div className={`${cardBaseClass} p-8 relative overflow-hidden`}>
-              <div className="relative z-10">
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-2">Sample Analysis Results</h3>
-                    <p className="text-cyan-300/70 text-sm">Showing 6 of 2,547 analyzed buildings</p>
-                  </div>
-                </div>
-                
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-cyan-500/20">
-                        <th className="text-left py-3 px-4 text-cyan-300 font-semibold text-sm">Company</th>
-                        <th className="text-left py-3 px-4 text-cyan-300 font-semibold text-sm">Location</th>
-                        <th className="text-left py-3 px-4 text-cyan-300 font-semibold text-sm">Building Type</th>
-                        <th className="text-right py-3 px-4 text-cyan-300 font-semibold text-sm">Annual Savings</th>
-                        <th className="text-right py-3 px-4 text-cyan-300 font-semibold text-sm">Payback</th>
-                        <th className="text-center py-3 px-4 text-cyan-300 font-semibold text-sm">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="border-b border-cyan-500/10 hover:bg-cyan-500/5 transition-colors">
-                        <td className="py-4 px-4">
-                          <div className="font-medium text-white">MGM Grand Detroit Hotel & Casino</div>
-                          <div className="text-cyan-300/60 text-xs">Mixed-Use Complex</div>
-                        </td>
-                        <td className="py-4 px-4 text-white/80">Detroit, MI</td>
-                        <td className="py-4 px-4 text-white/80">Casino/Hotel</td>
-                        <td className="py-4 px-4 text-right">
-                          <span className="text-green-400 font-bold">$1.2M</span>
-                        </td>
-                        <td className="py-4 px-4 text-right">
-                          <span className="text-orange-400 font-bold">0.8 years</span>
-                        </td>
-                        <td className="py-4 px-4 text-center">
-                          <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded-full text-xs font-medium">Complete</span>
-                        </td>
-                      </tr>
-                      <tr className="border-b border-cyan-500/10 hover:bg-cyan-500/5 transition-colors">
-                        <td className="py-4 px-4">
-                          <div className="font-medium text-white">Jeffersonian Apartments</div>
-                          <div className="text-cyan-300/60 text-xs">Residential High-Rise</div>
-                        </td>
-                        <td className="py-4 px-4 text-white/80">Detroit, MI</td>
-                        <td className="py-4 px-4 text-white/80">Residential</td>
-                        <td className="py-4 px-4 text-right">
-                          <span className="text-green-400 font-bold">$2.1M</span>
-                        </td>
-                        <td className="py-4 px-4 text-right">
-                          <span className="text-orange-400 font-bold">1.0 years</span>
-                        </td>
-                        <td className="py-4 px-4 text-center">
-                          <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded-full text-xs font-medium">Complete</span>
-                        </td>
-                      </tr>
-                      <tr className="border-b border-cyan-500/10 hover:bg-cyan-500/5 transition-colors">
-                        <td className="py-4 px-4">
-                          <div className="font-medium text-white">Ford Motor Company</div>
-                          <div className="text-cyan-300/60 text-xs">Manufacturing Complex</div>
-                        </td>
-                        <td className="py-4 px-4 text-white/80">Dearborn, MI</td>
-                        <td className="py-4 px-4 text-white/80">Manufacturing</td>
-                        <td className="py-4 px-4 text-right">
-                          <span className="text-green-400 font-bold">$2.4M</span>
-                        </td>
-                        <td className="py-4 px-4 text-right">
-                          <span className="text-orange-400 font-bold">0.9 years</span>
-                        </td>
-                        <td className="py-4 px-4 text-center">
-                          <span className="bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded-full text-xs font-medium animate-pulse">Processing</span>
-                        </td>
-                      </tr>
-                      <tr className="border-b border-cyan-500/10 hover:bg-cyan-500/5 transition-colors">
-                        <td className="py-4 px-4">
-                          <div className="font-medium text-white">General Motors</div>
-                          <div className="text-cyan-300/60 text-xs">Corporate Headquarters</div>
-                        </td>
-                        <td className="py-4 px-4 text-white/80">Detroit, MI</td>
-                        <td className="py-4 px-4 text-white/80">Office Complex</td>
-                        <td className="py-4 px-4 text-right">
-                          <span className="text-green-400 font-bold">$1.8M</span>
-                        </td>
-                        <td className="py-4 px-4 text-right">
-                          <span className="text-orange-400 font-bold">1.2 years</span>
-                        </td>
-                        <td className="py-4 px-4 text-center">
-                          <span className="bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded-full text-xs font-medium animate-pulse">Processing</span>
-                        </td>
-                      </tr>
-                      <tr className="border-b border-cyan-500/10 hover:bg-cyan-500/5 transition-colors">
-                        <td className="py-4 px-4">
-                          <div className="font-medium text-white">Henry Ford Health</div>
-                          <div className="text-cyan-300/60 text-xs">Medical Center</div>
-                        </td>
-                        <td className="py-4 px-4 text-white/80">Detroit, MI</td>
-                        <td className="py-4 px-4 text-white/80">Healthcare</td>
-                        <td className="py-4 px-4 text-right">
-                          <span className="text-green-400 font-bold">$3.1M</span>
-                        </td>
-                        <td className="py-4 px-4 text-right">
-                          <span className="text-orange-400 font-bold">1.1 years</span>
-                        </td>
-                        <td className="py-4 px-4 text-center">
-                          <span className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full text-xs font-medium">Queued</span>
-                        </td>
-                      </tr>
-                      <tr className="hover:bg-cyan-500/5 transition-colors">
-                        <td className="py-4 px-4">
-                          <div className="font-medium text-white">Quicken Loans</div>
-                          <div className="text-cyan-300/60 text-xs">Corporate Tower</div>
-                        </td>
-                        <td className="py-4 px-4 text-white/80">Detroit, MI</td>
-                        <td className="py-4 px-4 text-white/80">Office</td>
-                        <td className="py-4 px-4 text-right">
-                          <span className="text-green-400 font-bold">$890K</span>
-                        </td>
-                        <td className="py-4 px-4 text-right">
-                          <span className="text-orange-400 font-bold">1.4 years</span>
-                        </td>
-                        <td className="py-4 px-4 text-center">
-                          <span className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full text-xs font-medium">Queued</span>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                
-                <div className="mt-6 flex items-center justify-between">
-                  <div className="text-cyan-300/70 text-sm">
-                    Showing 6 of 2,547 analyzed buildings
-                  </div>
-                  <div className="flex gap-2">
-                    <div className="join">
-                      <button className="join-item btn btn-sm bg-[#28292b]/80 hover:bg-[#28292b] text-white border-cyan-500/20">«</button>
-                      <button className="join-item btn btn-sm bg-cyan-500 text-white border-cyan-500">1</button>
-                      <button className="join-item btn btn-sm bg-[#28292b]/80 hover:bg-[#28292b] text-white border-cyan-500/20">2</button>
-                      <button className="join-item btn btn-sm bg-[#28292b]/80 hover:bg-[#28292b] text-white border-cyan-500/20">3</button>
-                      <button className="join-item btn btn-sm bg-[#28292b]/80 hover:bg-[#28292b] text-white border-cyan-500/20">»</button>
-                    </div>
-                  </div>
-                </div>
+              <div className="mb-8">
+                <SectionLoading height="350px" />
               </div>
-            </div>
-          </div>
+              <div className="mb-8">
+                <SectionLoading height="500px" />
+              </div>
+              <div className="mb-12">
+                <SectionLoading height="400px" />
+              </div>
+            </>
+          )}
 
           {/* Action Buttons */}
           <div className="flex justify-between items-center mt-8 mb-4">

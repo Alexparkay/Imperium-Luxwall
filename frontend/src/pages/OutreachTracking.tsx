@@ -82,6 +82,14 @@ interface Facility {
   manager: string;
   email: string;
   phone: string;
+  buildingData: {
+    size: number; // sq ft
+    built: number; // year
+    employees: number;
+    currentEnergyCost: number; // annual
+    annualkWh: number;
+    costPerkWh: number;
+  };
   emailStatus: EmailStatus;
   outreachStatus: {
     opened: boolean;
@@ -93,8 +101,12 @@ interface Facility {
     followUpDate?: Date;
     notes: string;
   };
-  solarPotential: {
+  energyPotential: {
     annualSavings: number;
+    paybackPeriod: number;
+    totalSavings: number;
+    efficiency: number;
+    installationCost: number;
   };
 }
 
@@ -168,17 +180,71 @@ const OutreachTracking = () => {
 
   // Extended sample data for contacts to make it look more like a big database
   const expandedContacts = [
-    { id: 1, name: "Jeff Levy", email: "j.levy@example.com", company: "SAP Finance", location: "Atlanta, GA", position: "SAP Manager", status: "Engaged", lastContact: "2023-06-17", tags: ["SAP S/4HANA", "Decision Maker"], leadScore: 87, outreachHistory: [
-      { id: 1, date: "2023-06-17", type: "email", subject: "SAP Migration Proposal", status: "sent", response: "interested", notes: "Interested in learning more about the ROI" },
-      { id: 2, date: "2023-06-10", type: "email", subject: "Introduction to SAP S/4HANA", status: "sent", response: "positive", notes: "Requested more information" }
-    ] },
-    { id: 2, name: "Amy Huke", email: "a.huke@example.com", company: "Honeywell", location: "Kansas City, MO", position: "ERP Director", status: "New", lastContact: "2023-06-15", tags: ["Manufacturing", "Prospect"], leadScore: 62, outreachHistory: [
-      { id: 1, date: "2023-06-15", type: "email", subject: "SAP Cloud Migration", status: "sent", response: "none", notes: "" }
-    ] },
-    { id: 3, name: "Ryan Kuddes", email: "r.kuddes@example.com", company: "Siemens", location: "Denver, CO", position: "IT Manager", status: "Engaged", lastContact: "2023-06-22", tags: ["SAP", "Prospect"], leadScore: 73, outreachHistory: [
-      { id: 1, date: "2023-06-22", type: "email", subject: "SAP S/4HANA Implementation", status: "sent", response: "positive", notes: "Scheduled a follow-up call" },
-      { id: 2, date: "2023-06-15", type: "call", subject: "Initial Introduction", status: "completed", response: "interested", notes: "Showed interest in our solutions" }
-    ] }
+    { 
+      id: 1, 
+      name: "Patricia Williams", 
+      email: "p.williams@detroitmi.gov", 
+      company: "Coleman A. Young Municipal Building", 
+      location: "Detroit, MI", 
+      position: "Facilities Operations Director", 
+      status: "Engaged", 
+      lastContact: "2023-12-15", 
+      tags: ["Municipal", "Decision Maker"], 
+      leadScore: 91, 
+      outreachHistory: [
+        { id: 1, date: "2023-12-15", type: "email", subject: "Coleman Young Municipal energy efficiency opportunity", status: "sent", response: "interested", notes: "Requested detailed analysis for city budget planning" },
+        { id: 2, date: "2023-12-10", type: "email", subject: "Detroit sustainability initiatives analysis", status: "sent", response: "positive", notes: "Mentioned upcoming infrastructure budget discussions" }
+      ],
+      buildingMetrics: {
+        size: 780000,
+        currentCost: 2600000,
+        projectedSavings: 482000,
+        paybackPeriod: 18
+      }
+    },
+    { 
+      id: 2, 
+      name: "Marcus Johnson", 
+      email: "m.johnson@detroitmi.gov", 
+      company: "Coleman A. Young Municipal Building", 
+      location: "Detroit, MI", 
+      position: "Energy Management Coordinator", 
+      status: "New", 
+      lastContact: "2023-12-12", 
+      tags: ["Energy Management", "Technical"], 
+      leadScore: 78, 
+      outreachHistory: [
+        { id: 1, date: "2023-12-12", type: "email", subject: "Energy optimization analysis", status: "sent", response: "none", notes: "" }
+      ],
+      buildingMetrics: {
+        size: 780000,
+        currentCost: 2600000,
+        projectedSavings: 482000,
+        paybackPeriod: 18
+      }
+    },
+    { 
+      id: 3, 
+      name: "Jennifer Rodriguez", 
+      email: "j.rodriguez@detroitmi.gov", 
+      company: "Detroit General Services Department", 
+      location: "Detroit, MI", 
+      position: "Building Operations Manager", 
+      status: "Engaged", 
+      lastContact: "2023-12-18", 
+      tags: ["Operations", "Prospect"], 
+      leadScore: 84, 
+      outreachHistory: [
+        { id: 1, date: "2023-12-18", type: "email", subject: "Municipal building efficiency opportunities", status: "sent", response: "positive", notes: "Interested in case studies from other cities" },
+        { id: 2, date: "2023-12-13", type: "call", subject: "Initial Discussion", status: "completed", response: "interested", notes: "Discussed Detroit's infrastructure modernization goals" }
+      ],
+      buildingMetrics: {
+        size: 780000,
+        currentCost: 2600000,
+        projectedSavings: 482000,
+        paybackPeriod: 18
+      }
+    }
   ]; 
 
   useEffect(() => {
@@ -353,305 +419,303 @@ const OutreachTracking = () => {
     }
   };
 
-  // Channel-specific data with updated higher metrics
+  // Channel-specific data with updated metrics for Coleman Young Municipal
   const emailMetrics = {
     delivery: {
-      sent: 28456,
-      delivered: 27893,
-      spamRate: 2.0,
-      deliverability: 98.0,
+      sent: 1247,
+      delivered: 1232,
+      spamRate: 1.2,
+      deliverability: 98.8,
     },
     engagement: {
-      opens: 13782,
-      openRate: 51.2,
-      clicks: 7893,
-      clickRate: 28.3,
-      uniqueOpens: 11421,
-      uniqueOpenRate: 47.5,
+      opens: 842,
+      openRate: 68.3,
+      clicks: 387,
+      clickRate: 31.4,
+      uniqueOpens: 721,
+      uniqueOpenRate: 58.5,
     },
     responses: {
-      total: 3872,
-      responseRate: 14.8,
-      positive: 2156,
-      positiveRate: 8.4,
-      negative: 516,
-      negativeRate: 1.9,
-      neutral: 1200,
-      neutralRate: 4.5,
+      total: 156,
+      responseRate: 12.5,
+      positive: 89,
+      positiveRate: 7.1,
+      negative: 23,
+      negativeRate: 1.8,
+      neutral: 44,
+      neutralRate: 3.5,
     },
     aiOptimization: {
-      autoReplyRate: 591,
-      avgResponseTime: 18, // seconds
-      optimizedTemplates: 37,
-      personalizationScore: 94,
+      autoReplyRate: 423,
+      avgResponseTime: 22, // seconds
+      optimizedTemplates: 12,
+      personalizationScore: 92,
     },
     timing: {
       bestDay: 'Tuesday',
-      bestHour: '10:00',
-      worstDay: 'Sunday',
-      worstHour: '18:00',
+      bestHour: '09:30',
+      worstDay: 'Friday',
+      worstHour: '16:00',
     }
   };
 
   const linkedinMetrics = {
     connections: {
-      total: 12450,
-      new: 1156,
-      pending: 289,
-      accepted: 11123,
-      acceptRate: 61.5,
+      total: 3247,
+      new: 284,
+      pending: 67,
+      accepted: 2891,
+      acceptRate: 75.2,
     },
     engagement: {
-      profileViews: 22345,
-      postEngagement: 8760,
-      messageOpens: 8670,
-      messageOpenRate: 82.2,
-      contentInteractions: 12340,
+      profileViews: 8934,
+      postEngagement: 3456,
+      messageOpens: 2847,
+      messageOpenRate: 87.3,
+      contentInteractions: 4782,
     },
     responses: {
-      total: 3920,
-      responseRate: 44.4,
-      positive: 2450,
-      positiveRate: 27.6,
-      negative: 870,
-      negativeRate: 9.0,
-      neutral: 600,
-      neutralRate: 7.8,
+      total: 1247,
+      responseRate: 43.8,
+      positive: 798,
+      positiveRate: 28.0,
+      negative: 189,
+      negativeRate: 6.6,
+      neutral: 260,
+      neutralRate: 9.1,
     },
     aiOptimization: {
-      connectionQuality: 97,
-      messageOptimization: 93,
-      contentRecommendations: 45,
-      engagementPredictions: 96,
+      connectionQuality: 94,
+      messageOptimization: 89,
+      contentRecommendations: 18,
+      engagementPredictions: 91,
     },
     content: {
-      postsCreated: 145,
-      articlesShared: 83,
-      commentsReceived: 3450,
-      sharesGenerated: 1230,
+      postsCreated: 47,
+      articlesShared: 28,
+      commentsReceived: 1247,
+      sharesGenerated: 456,
     }
   };
 
   const whatsappMetrics = {
     delivery: {
-      sent: 18930,
-      delivered: 18760,
-      deliveredRate: 99.1,
-      failed: 170,
-      failedRate: 0.9,
+      sent: 567,
+      delivered: 559,
+      deliveredRate: 98.6,
+      failed: 8,
+      failedRate: 1.4,
     },
     engagement: {
-      read: 16540,
-      readRate: 87.4,
-      replied: 8450,
-      replyRate: 44.6,
-      forwarded: 2340,
-      forwardedRate: 12.4,
+      read: 487,
+      readRate: 87.1,
+      replied: 234,
+      replyRate: 48.1,
+      forwarded: 89,
+      forwardedRate: 18.3,
     },
     responses: {
-      total: 8450,
-      responseRate: 54.6,
-      positive: 5670,
-      positiveRate: 37.0,
-      negative: 1780,
-      negativeRate: 11.4,
-      neutral: 1000,
-      neutralRate: 6.2,
+      total: 234,
+      responseRate: 48.1,
+      positive: 156,
+      positiveRate: 32.0,
+      negative: 34,
+      negativeRate: 7.0,
+      neutral: 44,
+      neutralRate: 9.0,
     },
     aiOptimization: {
-      responseTime: 12, // seconds
-      autoReplyRate: 623,
-      contextUnderstanding: 97,
-      sentimentAnalysis: 95,
+      responseTime: 15, // seconds
+      autoReplyRate: 287,
+      contextUnderstanding: 95,
+      sentimentAnalysis: 93,
     },
     timing: {
       bestDay: 'Wednesday',
-      bestHour: '14:00',
-      worstDay: 'Saturday',
-      worstHour: '22:00',
+      bestHour: '10:00',
+      worstDay: 'Sunday',
+      worstHour: '20:00',
     }
   };
 
-  // AI Insights for each channel with enhanced learning narrative
+  // AI Insights for each channel with Coleman Young Municipal focus
   const aiInsights = {
     email: [
       {
         type: 'optimization',
-        title: 'Neural Response Optimization',
-        description: '591% higher reply rate when responding within 18 seconds. Our AI neural network has self-optimized response timing patterns.',
+        title: 'Municipal Building Response Patterns',
+        description: '423% higher reply rate when mentioning specific city budget cycles and infrastructure priorities. AI has learned optimal timing for municipal decision-makers.',
         impact: 'high',
         metric: 'response_rate',
-        change: '+591%',
+        change: '+423%',
         icon: <MdOutlineSpeed className="text-blue-500" />,
-        learnings: 'AI has learned that immediate contextual responses generate significantly higher engagement than delayed responses.'
+        learnings: 'AI discovered that municipal contacts respond 4x better when emails reference specific city planning cycles and budget considerations.'
       },
       {
         type: 'pattern',
-        title: 'Subject Line Neural Analysis',
-        description: 'Emails with personalized industry-specific terms show 67% higher open rates. AI has autonomously identified key language patterns.',
+        title: 'Government Decision Timeline Analysis',
+        description: 'Emails sent on Tuesday mornings at 9:30 AM show 67% higher open rates for municipal contacts. AI optimized timing for government work schedules.',
         impact: 'high',
         metric: 'open_rate',
         change: '+67%',
         icon: <MdOutlineTrendingUp className="text-blue-500" />,
-        learnings: 'AI has learned to distinguish between generic subject lines and those with specific terminology relevant to the recipient\'s industry.'
+        learnings: 'Neural system identified that government employees check emails most actively during early morning hours after weekly planning meetings.'
       },
       {
         type: 'timing',
-        title: 'Temporal Pattern Recognition',
-        description: 'AI identified sending emails on Tuesday at 10:42 AM results in 43% higher engagement through ongoing analysis.',
+        title: 'Municipal Budget Cycle Optimization',
+        description: 'AI identified budget planning periods for Detroit city departments, increasing engagement by 58% during key decision windows.',
         impact: 'medium',
         metric: 'engagement',
-        change: '+43%',
+        change: '+58%',
         icon: <MdOutlineAccessTime className="text-blue-500" />,
-        learnings: 'The neural system has detected cyclical patterns in recipient availability and attention span.'
+        learnings: 'AI learned to recognize municipal budget cycles and time outreach for maximum decision-maker availability.'
       }
     ],
     linkedin: [
       {
         type: 'optimization',
-        title: 'Connection Neural Prioritization',
-        description: 'AI has autonomously identified 1,156 high-value connections based on neural network decision trees analyzing 27 variables.',
+        title: 'Government Professional Network Mapping',
+        description: 'AI autonomously identified 284 high-value municipal connections based on decision-making authority and infrastructure responsibilities.',
         impact: 'high',
         metric: 'connection_quality',
-        change: '+97%',
+        change: '+94%',
         icon: <MdOutlineGroups className="text-blue-500" />,
-        learnings: 'The system learned to recognize potential decision makers through language patterns and behavioral indicators in profiles.'
+        learnings: 'System learned to distinguish between administrative and decision-making roles in municipal organizations.'
       },
       {
         type: 'content',
-        title: 'Content Evolution Engine',
-        description: 'Posts about SAP migration case studies with specific ROI metrics generate 4.7x more engagement. AI continuously refines content approach.',
+        title: 'Municipal Case Study Engagement',
+        description: 'Posts about government building energy retrofits generate 3.2x more engagement. AI continuously optimizes content for municipal audiences.',
         impact: 'high',
         metric: 'engagement',
-        change: '+470%',
+        change: '+320%',
         icon: <MdOutlineTrendingUp className="text-blue-500" />,
-        learnings: 'AI has discovered that quantifiable success metrics in case studies create significantly more credibility and engagement.'
+        learnings: 'AI discovered that municipal professionals engage most with peer success stories and budget impact data.'
       },
       {
         type: 'timing',
-        title: 'Connection Sequence Optimization',
-        description: 'AI-optimized multi-touch sequences yield 85% higher response rates compared to standard outreach approaches.',
+        title: 'Government Work Schedule Adaptation',
+        description: 'AI-optimized posting schedule for municipal professionals yields 75% higher response rates during business hours.',
         impact: 'high',
         metric: 'response_rate',
-        change: '+85%',
+        change: '+75%',
         icon: <MdOutlineAccessTime className="text-blue-500" />,
-        learnings: 'Neural analysis revealed optimal timing between connection, engagement, and direct outreach for maximum effectiveness.'
+        learnings: 'Neural analysis revealed optimal engagement windows for government employees with standard business hour schedules.'
       }
     ],
     whatsapp: [
       {
         type: 'optimization',
-        title: 'Real-time Response Adaptation',
-        description: '623% higher engagement with AI-driven contextual responses delivered within 12 seconds.',
+        title: 'Municipal Contact Compliance',
+        description: '287% higher engagement with compliant municipal messaging delivered within 15 seconds.',
         impact: 'high',
         metric: 'engagement',
-        change: '+623%',
+        change: '+287%',
         icon: <MdOutlineSpeed className="text-blue-500" />,
-        learnings: 'AI has continuously improved its response time and contextual understanding through reinforcement learning.'
+        learnings: 'AI learned proper communication protocols for government contacts while maintaining high engagement rates.'
       },
       {
         type: 'pattern',
-        title: 'Message Personalization Evolution',
-        description: 'Neural-crafted personalized messages show 128% higher response rates. AI autonomously refines personalization approach.',
+        title: 'Government Communication Optimization',
+        description: 'Messages referencing fiscal responsibility and public benefit show 156% higher response rates. AI adapts messaging for public sector values.',
         impact: 'high',
         metric: 'response_rate',
-        change: '+128%',
+        change: '+156%',
         icon: <MdOutlineTrendingUp className="text-blue-500" />,
-        learnings: 'The system has learned to extract and incorporate recipient-specific information in ways that feel authentic and relevant.'
+        learnings: 'System learned to emphasize public benefit and fiscal responsibility in government communications.'
       },
       {
         type: 'timing',
-        title: 'Behavioral Timing Optimization',
-        description: 'AI has detected recipient-specific optimal contact windows, increasing read rates by 92%.',
+        title: 'Municipal Work Hour Optimization',
+        description: 'AI detected government employee availability patterns, increasing read rates by 87% during optimal contact windows.',
         impact: 'high',
         metric: 'read_rate',
-        change: '+92%',
+        change: '+87%',
         icon: <MdOutlineAccessTime className="text-blue-500" />,
-        learnings: 'Neural network has identified individual behavioral patterns and schedule variations across different prospect types.'
+        learnings: 'Neural network identified consistent municipal work patterns and optimized message timing accordingly.'
       }
     ]
   };
 
-  // Example data for Email with upward trends
+  // Example data for Email with municipal building focus
   const emailChartData = [
-    { month: 'Jan', contacted: 130, opened: 65, replied: 32, positive: 16 },
-    { month: 'Feb', contacted: 165, opened: 85, replied: 42, positive: 21 },
-    { month: 'Mar', contacted: 210, opened: 110, replied: 56, positive: 28 },
-    { month: 'Apr', contacted: 260, opened: 140, replied: 72, positive: 38 },
-    { month: 'May', contacted: 320, opened: 180, replied: 95, positive: 52 },
-    { month: 'Jun', contacted: 390, opened: 230, replied: 125, positive: 68 },
-    { month: 'Jul', contacted: 470, opened: 290, replied: 155, positive: 85 },
-    { month: 'Aug', contacted: 580, opened: 360, replied: 190, positive: 105 },
-    { month: 'Sep', contacted: 700, opened: 440, replied: 235, positive: 130 },
-    { month: 'Oct', contacted: 850, opened: 530, replied: 290, positive: 160 },
-    { month: 'Nov', contacted: 1020, opened: 650, replied: 350, positive: 195 },
-    { month: 'Dec', contacted: 1250, opened: 790, replied: 430, positive: 240 },
+    { month: 'Jan', contacted: 45, opened: 31, replied: 12, positive: 8 },
+    { month: 'Feb', contacted: 58, opened: 42, replied: 18, positive: 13 },
+    { month: 'Mar', contacted: 72, opened: 53, replied: 24, positive: 17 },
+    { month: 'Apr', contacted: 89, opened: 67, replied: 32, positive: 23 },
+    { month: 'May', contacted: 107, opened: 81, replied: 41, positive: 29 },
+    { month: 'Jun', contacted: 128, opened: 98, replied: 52, positive: 37 },
+    { month: 'Jul', contacted: 152, opened: 118, replied: 64, positive: 46 },
+    { month: 'Aug', contacted: 178, opened: 141, replied: 78, positive: 56 },
+    { month: 'Sep', contacted: 206, opened: 167, replied: 94, positive: 67 },
+    { month: 'Oct', contacted: 234, opened: 192, replied: 112, positive: 81 },
+    { month: 'Nov', contacted: 267, opened: 219, replied: 134, positive: 97 },
+    { month: 'Dec', contacted: 298, opened: 247, replied: 156, positive: 115 },
   ];
 
-  // Example spike explanations with AI learning narrative
+  // Example spike explanations with municipal focus
   const emailSpikes = {
-    4: 'AI detected an opportunity to optimize subject lines for manufacturing industry - implemented autonomously',
-    7: 'Neural system learned to identify decision-makers more effectively, increasing targeting precision by 78%',
-    9: 'Self-improving AI auto-replied to leads within 12 seconds, boosting replies by 591%',
-    11: 'AI autonomously refined personalization approach based on 12,450 previous interactions'
+    4: 'AI detected Detroit municipal budget planning cycle - implemented targeted messaging for infrastructure decisions',
+    7: 'Neural system learned to identify key municipal decision-makers, increasing targeting precision by 78%',
+    9: 'Self-improving AI optimized for government work schedules, boosting replies by 423%',
+    11: 'AI autonomously refined messaging for municipal fiscal priorities based on 1,247 previous interactions'
   };
 
-  // For LinkedIn/WhatsApp charts with upward trends
+  // For LinkedIn/WhatsApp charts with municipal focus
   const linkedinChartData = [
-    { month: 'Jan', connections: 150, messages: 80, replies: 30, positive: 15 },
-    { month: 'Feb', connections: 190, messages: 110, replies: 45, positive: 22 },
-    { month: 'Mar', connections: 240, messages: 140, replies: 65, positive: 32 },
-    { month: 'Apr', connections: 310, messages: 185, replies: 90, positive: 45 },
-    { month: 'May', connections: 390, messages: 240, replies: 120, positive: 62 },
-    { month: 'Jun', connections: 490, messages: 310, replies: 160, positive: 85 },
-    { month: 'Jul', connections: 620, messages: 390, replies: 210, positive: 115 },
-    { month: 'Aug', connections: 780, messages: 495, replies: 270, positive: 145 },
-    { month: 'Sep', connections: 980, messages: 620, replies: 340, positive: 185 },
-    { month: 'Oct', connections: 1220, messages: 780, replies: 430, positive: 235 },
-    { month: 'Nov', connections: 1530, messages: 980, replies: 530, positive: 290 },
-    { month: 'Dec', connections: 1920, messages: 1240, replies: 680, positive: 370 },
+    { month: 'Jan', connections: 67, messages: 34, replies: 12, positive: 8 },
+    { month: 'Feb', connections: 84, messages: 45, replies: 18, positive: 13 },
+    { month: 'Mar', connections: 102, messages: 58, replies: 26, positive: 18 },
+    { month: 'Apr', connections: 123, messages: 73, replies: 35, positive: 25 },
+    { month: 'May', connections: 147, messages: 91, replies: 46, positive: 33 },
+    { month: 'Jun', connections: 173, messages: 112, replies: 59, positive: 42 },
+    { month: 'Jul', connections: 201, messages: 136, replies: 74, positive: 53 },
+    { month: 'Aug', connections: 232, messages: 163, replies: 91, positive: 65 },
+    { month: 'Sep', connections: 265, messages: 193, replies: 110, positive: 79 },
+    { month: 'Oct', connections: 301, messages: 226, replies: 132, positive: 95 },
+    { month: 'Nov', connections: 340, messages: 262, replies: 156, positive: 112 },
+    { month: 'Dec', connections: 382, messages: 301, replies: 183, positive: 131 },
   ];
 
   const whatsappChartData = [
-    { month: 'Jan', sent: 200, delivered: 198, read: 150, replied: 75 },
-    { month: 'Feb', sent: 260, delivered: 256, read: 210, replied: 105 },
-    { month: 'Mar', sent: 340, delivered: 336, read: 285, replied: 145 },
-    { month: 'Apr', sent: 440, delivered: 435, read: 370, replied: 195 },
-    { month: 'May', sent: 580, delivered: 574, read: 490, replied: 260 },
-    { month: 'Jun', sent: 760, delivered: 752, read: 650, replied: 350 },
-    { month: 'Jul', sent: 980, delivered: 970, read: 840, replied: 460 },
-    { month: 'Aug', sent: 1280, delivered: 1270, read: 1100, replied: 600 },
-    { month: 'Sep', sent: 1650, delivered: 1635, read: 1420, replied: 780 },
-    { month: 'Oct', sent: 2150, delivered: 2130, read: 1860, replied: 1020 },
-    { month: 'Nov', sent: 2780, delivered: 2750, read: 2420, replied: 1340 },
-    { month: 'Dec', sent: 3600, delivered: 3560, read: 3150, replied: 1740 },
+    { month: 'Jan', sent: 23, delivered: 23, read: 19, replied: 8 },
+    { month: 'Feb', sent: 31, delivered: 30, read: 26, replied: 12 },
+    { month: 'Mar', sent: 42, delivered: 41, read: 36, replied: 17 },
+    { month: 'Apr', sent: 54, delivered: 53, read: 47, replied: 23 },
+    { month: 'May', sent: 69, delivered: 68, read: 61, replied: 31 },
+    { month: 'Jun', sent: 86, delivered: 85, read: 77, replied: 40 },
+    { month: 'Jul', sent: 105, delivered: 104, read: 95, replied: 51 },
+    { month: 'Aug', sent: 127, delivered: 125, read: 116, replied: 64 },
+    { month: 'Sep', sent: 152, delivered: 150, read: 140, replied: 79 },
+    { month: 'Oct', sent: 179, delivered: 177, read: 167, replied: 96 },
+    { month: 'Nov', sent: 209, delivered: 207, read: 197, replied: 116 },
+    { month: 'Dec', sent: 242, delivered: 239, read: 230, replied: 138 },
   ];
 
-  // Spike explanations with AI learning narrative
+  // Spike explanations with municipal focus
   const linkedinSpikes = {
-    5: 'AI neural network identified optimal connection pattern sequence, boosting acceptance rate by 76%',
-    7: 'AI autonomously evolved content strategy, increasing engagement by 412%',
-    9: 'Neural system developed industry-specific messaging, improving response quality by 218%',
-    11: 'AI discovered and implemented new decision-maker identification patterns'
+    5: 'AI neural network identified optimal municipal professional connection patterns, boosting acceptance rate by 76%',
+    7: 'AI autonomously evolved content strategy for government audiences, increasing engagement by 320%',
+    9: 'Neural system developed municipal-specific messaging, improving response quality by 218%',
+    11: 'AI discovered and implemented new decision-maker identification patterns for city government'
   };
 
   const whatsappSpikes = {
-    4: 'AI learned optimal emoji placement in messages, increasing read rates by 56%',
-    6: 'Neural response time optimization reduced average response time to 12 seconds',
-    8: 'AI autonomously refined message structure based on 24,790 previous interactions',
-    10: 'AI detected and implemented industry-specific terminology patterns, boosting reply rate by 623%'
+    4: 'AI learned optimal communication tone for municipal contacts, increasing read rates by 56%',
+    6: 'Neural response time optimization reduced average response time to 15 seconds for government contacts',
+    8: 'AI autonomously refined message structure based on 567 municipal interactions',
+    10: 'AI detected and implemented government-specific terminology patterns, boosting reply rate by 287%'
   };
 
-  // Example contacts data for the list
+  // Example contacts data for the list with Coleman Young focus
   const contactsData = [
-    { id: 1, name: "Jeff Levy", email: "j.levy@example.com", company: "SAP Finance", position: "SAP Manager", status: "positive", date: "2023-12-17", notes: "Interested in scheduling a demo" },
-    { id: 2, name: "Amy Huke", email: "a.huke@example.com", company: "Honeywell", position: "ERP Director", status: "replied", date: "2023-12-15", notes: "Asked for more information" },
-    { id: 3, name: "Ryan Kuddes", email: "r.kuddes@example.com", company: "Siemens", position: "IT Manager", status: "not_replied", date: "2023-12-22", notes: "" },
-    { id: 4, name: "Sarah Johnson", email: "s.johnson@example.com", company: "Microsoft", position: "CTO", status: "positive", date: "2023-12-12", notes: "Very interested in our solution" },
-    { id: 5, name: "Michael Chang", email: "m.chang@example.com", company: "Oracle", position: "SAP Consultant", status: "negative", date: "2023-12-10", notes: "Not interested at this time" },
-    { id: 6, name: "Lisa Fernandez", email: "l.fernandez@example.com", company: "IBM", position: "IT Director", status: "replied", date: "2023-12-08", notes: "Requested pricing information" },
-    { id: 7, name: "David Kim", email: "d.kim@example.com", company: "Samsung", position: "ERP Manager", status: "not_replied", date: "2023-12-05", notes: "" },
-    { id: 8, name: "Emily Wilson", email: "e.wilson@example.com", company: "Deloitte", position: "SAP Specialist", status: "not_replied", date: "2023-12-03", notes: "" },
+    { id: 1, name: "Patricia Williams", email: "p.williams@detroitmi.gov", company: "Coleman A. Young Municipal", position: "Facilities Operations Director", status: "positive", date: "2023-12-15", notes: "Interested in detailed budget analysis for city planning" },
+    { id: 2, name: "Marcus Johnson", email: "m.johnson@detroitmi.gov", company: "Coleman A. Young Municipal", position: "Energy Management Coordinator", status: "replied", date: "2023-12-12", notes: "Requested technical specifications and ROI data" },
+    { id: 3, name: "Jennifer Rodriguez", email: "j.rodriguez@detroitmi.gov", company: "Detroit General Services", position: "Building Operations Manager", status: "not_replied", date: "2023-12-18", notes: "" },
+    { id: 4, name: "David Chen", email: "d.chen@detroitmi.gov", company: "Detroit Public Works", position: "Facilities Maintenance Director", status: "positive", date: "2023-12-10", notes: "Very interested in maintenance cost reduction opportunities" },
+    { id: 5, name: "Sarah Thompson", email: "s.thompson@detroitmi.gov", company: "Coleman A. Young Municipal", position: "Sustainability Coordinator", status: "negative", date: "2023-12-08", notes: "Currently focused on other sustainability projects" },
+    { id: 6, name: "Robert Martinez", email: "r.martinez@detroitmi.gov", company: "Detroit Planning Department", position: "Infrastructure Manager", status: "replied", date: "2023-12-05", notes: "Interested in long-term infrastructure planning applications" },
   ];
 
   // Filter contacts based on selected filter
@@ -738,9 +802,9 @@ const OutreachTracking = () => {
                 {getChannelName(activeTab)} Neural Analytics
               </h1>
               <p className="text-white/60 mt-2">
-                {activeTab === 'email' && 'Self-optimizing AI system monitoring email performance and autonomously implementing improvements'}
-                {activeTab === 'linkedin' && 'Neural network analyzing and enhancing LinkedIn connection and engagement patterns'}
-                {activeTab === 'whatsapp' && 'Adaptive AI continuously evolving WhatsApp messaging effectiveness'}
+                {activeTab === 'email' && 'AI system analyzing Coleman A. Young Municipal Building energy efficiency outreach performance'}
+                {activeTab === 'linkedin' && 'Neural network optimizing municipal professional engagement patterns for Coleman Young Building contacts'}
+                {activeTab === 'whatsapp' && 'Adaptive AI enhancing government contact messaging effectiveness for Detroit municipal operations'}
               </p>
             </div>
             <div className="flex gap-4">
@@ -765,25 +829,25 @@ const OutreachTracking = () => {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-xl font-semibold text-white">Neural System Active</h3>
+                  <h3 className="text-xl font-semibold text-white">Municipal AI System Active</h3>
                   <span className="flex h-3 w-3 relative">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#2a64f5] opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
                   </span>
                 </div>
-                <p className="text-white/80 mt-1">AI brain has processed 127,893 interactions and implemented 437 autonomous optimizations</p>
+                <p className="text-white/80 mt-1">AI brain specialized for Coleman A. Young Municipal Building has processed 1,247 interactions and implemented 67 municipal-specific optimizations</p>
                 <div className="flex items-center gap-4 mt-2">
                   <div className="flex items-center gap-1 text-blue-500">
                     <MdOutlineTrendingUp />
-                    <span>Learning rate: 97.3%</span>
+                    <span>Municipal learning rate: 94.8%</span>
                   </div>
                   <div className="flex items-center gap-1 text-white/60">
                     <MdOutlineQueryStats />
-                    <span>Pattern confidence: 94.8%</span>
+                    <span>Government pattern confidence: 92.3%</span>
                   </div>
                   <div className="flex items-center gap-1 text-white/60">
                     <FaRegLightbulb />
-                    <span>Insights generated: 142</span>
+                    <span>Detroit insights: 23</span>
                   </div>
                 </div>
               </div>
@@ -805,7 +869,7 @@ const OutreachTracking = () => {
                 </div>
                 <div>
                   <h2 className="text-lg font-semibold text-white">Email Outreach</h2>
-                  <p className="text-white/60 text-sm">SAP migration email campaigns</p>
+                  <p className="text-white/60 text-sm">LuxWall energy efficiency campaigns</p>
                 </div>
               </div>
             </button>
@@ -823,7 +887,7 @@ const OutreachTracking = () => {
                 </div>
                 <div>
                   <h2 className="text-lg font-semibold text-white">LinkedIn Outreach</h2>
-                  <p className="text-white/60 text-sm">B2B SAP professional targeting</p>
+                  <p className="text-white/60 text-sm">B2B LuxWall professional targeting</p>
                 </div>
               </div>
             </button>
@@ -888,38 +952,38 @@ const OutreachTracking = () => {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
                 <div className={metricCardClass}>
                   <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/10 p-3 rounded-full mb-2 border border-blue-500/30"><MdOutlinePerson className="text-blue-400 text-2xl" /></div>
-                  <div className="text-3xl font-bold text-white">1,770</div>
-                  <div className="text-white/60 mt-1">Contacted</div>
+                  <div className="text-3xl font-bold text-white">298</div>
+                  <div className="text-white/60 mt-1">Municipal Contacts</div>
                   <div className="text-blue-500 text-sm mt-1 flex items-center gap-1">
                     <MdOutlineTrendingUp />
-                    <span>+28.5%</span>
+                    <span>+34.2%</span>
                   </div>
                 </div>
                 <div className={metricCardClass}>
                   <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/10 p-3 rounded-full mb-2 border border-purple-500/30"><MdOutlineMailOutline className="text-purple-400 text-2xl" /></div>
-                  <div className="text-3xl font-bold text-white">978</div>
+                  <div className="text-3xl font-bold text-white">247</div>
                   <div className="text-white/60 mt-1">Opened</div>
                   <div className="text-blue-500 text-sm mt-1 flex items-center gap-1">
                     <MdOutlineTrendingUp />
-                    <span>+52.3%</span>
+                    <span>+68.3%</span>
                   </div>
                 </div>
                 <div className={metricCardClass}>
                   <div className="bg-[#2a64f5]/20 p-3 rounded-full mb-2 border border-blue-500/30"><MdOutlineReply className="text-[#2a64f5] text-2xl" /></div>
-                  <div className="text-3xl font-bold text-white">487</div>
+                  <div className="text-3xl font-bold text-white">156</div>
                   <div className="text-white/60 mt-1">Replied</div>
                   <div className="text-blue-500 text-sm mt-1 flex items-center gap-1">
                     <MdOutlineTrendingUp />
-                    <span>+89.6%</span>
+                    <span>+91.7%</span>
                   </div>
                 </div>
                 <div className={metricCardClass}>
                   <div className="bg-gradient-to-br from-red-500/20 to-red-600/10 p-3 rounded-full mb-2 border border-red-500/30"><MdOutlineTrendingUp className="text-red-400 text-2xl" /></div>
-                  <div className="text-3xl font-bold text-white">243</div>
-                  <div className="text-white/60 mt-1">Positive</div>
+                  <div className="text-3xl font-bold text-white">89</div>
+                  <div className="text-white/60 mt-1">Positive Interest</div>
                   <div className="text-blue-500 text-sm mt-1 flex items-center gap-1">
                     <MdOutlineTrendingUp />
-                    <span>+126.7%</span>
+                    <span>+147.3%</span>
                   </div>
                 </div>
               </div>
@@ -992,7 +1056,7 @@ const OutreachTracking = () => {
               <div className={glassPanelClass}>
                 <div className="flex justify-between items-center mb-6">
                   <div className="flex items-center gap-3">
-                    <h3 className="text-xl font-semibold text-white">Outreach Contacts</h3>
+                    <h3 className="text-xl font-semibold text-white">Coleman Young Municipal Contacts</h3>
                     <div className="badge badge-primary">{filteredContacts.length}</div>
                   </div>
                   <button 
@@ -1198,38 +1262,38 @@ const OutreachTracking = () => {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
                 <div className={metricCardClass}>
                   <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/10 p-3 rounded-full mb-2 border border-blue-500/30"><MdOutlineGroups className="text-blue-400 text-2xl" /></div>
-                  <div className="text-3xl font-bold text-white">1,770</div>
-                  <div className="text-white/60 mt-1">Contacted</div>
+                  <div className="text-3xl font-bold text-white">382</div>
+                  <div className="text-white/60 mt-1">Government Connections</div>
                   <div className="text-blue-500 text-sm mt-1 flex items-center gap-1">
                     <MdOutlineTrendingUp />
-                    <span>+28.5%</span>
+                    <span>+42.7%</span>
                   </div>
                 </div>
                 <div className={metricCardClass}>
                   <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/10 p-3 rounded-full mb-2 border border-purple-500/30"><MdOutlineChat className="text-[#0A66C2] text-2xl" /></div>
-                  <div className="text-3xl font-bold text-white">867</div>
+                  <div className="text-3xl font-bold text-white">301</div>
                   <div className="text-white/60 mt-1">Messages</div>
                   <div className="text-blue-500 text-sm mt-1 flex items-center gap-1">
                     <MdOutlineTrendingUp />
-                    <span>+52.3%</span>
+                    <span>+67.8%</span>
                   </div>
                 </div>
                 <div className={metricCardClass}>
                   <div className="bg-[#2a64f5]/20 p-3 rounded-full mb-2 border border-blue-500/30"><MdOutlineReply className="text-[#2a64f5] text-2xl" /></div>
-                  <div className="text-3xl font-bold text-white">392</div>
+                  <div className="text-3xl font-bold text-white">183</div>
                   <div className="text-white/60 mt-1">Replies</div>
                   <div className="text-blue-500 text-sm mt-1 flex items-center gap-1">
                     <MdOutlineTrendingUp />
-                    <span>+89.6%</span>
+                    <span>+78.4%</span>
                   </div>
                 </div>
                 <div className={metricCardClass}>
                   <div className="bg-[#0A66C2]/20 p-3 rounded-full mb-2"><MdOutlineTrendingUp className="text-[#0A66C2] text-2xl" /></div>
-                  <div className="text-3xl font-bold text-white">87</div>
-                  <div className="text-white/60 mt-1">Meetings</div>
+                  <div className="text-3xl font-bold text-white">131</div>
+                  <div className="text-white/60 mt-1">Municipal Interest</div>
                   <div className="text-blue-500 text-sm mt-1 flex items-center gap-1">
                     <MdOutlineTrendingUp />
-                    <span>+126.7%</span>
+                    <span>+94.2%</span>
                   </div>
                 </div>
               </div>
@@ -1406,25 +1470,25 @@ const OutreachTracking = () => {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
                 <div className={metricCardClass}>
                   <div className="bg-[#25D366]/20 p-3 rounded-full mb-2"><MdSend className="text-[#25D366] text-2xl" /></div>
-                  <div className="text-3xl font-bold text-white">1893</div>
-                  <div className="text-white/60 mt-1">Sent</div>
+                  <div className="text-3xl font-bold text-white">242</div>
+                  <div className="text-white/60 mt-1">Municipal Messages</div>
                   <div className="text-blue-500 text-sm mt-1 flex items-center gap-1">
                     <MdOutlineTrendingUp />
-                    <span>+52.3%</span>
+                    <span>+58.9%</span>
                   </div>
                 </div>
                 <div className={metricCardClass}>
                   <div className="bg-[#25D366]/20 p-3 rounded-full mb-2"><MdOutlineOpenInNew className="text-[#25D366] text-2xl" /></div>
-                  <div className="text-3xl font-bold text-white">1654</div>
+                  <div className="text-3xl font-bold text-white">230</div>
                   <div className="text-white/60 mt-1">Read</div>
                   <div className="text-blue-500 text-sm mt-1 flex items-center gap-1">
                     <MdOutlineTrendingUp />
-                    <span>+65.4%</span>
+                    <span>+73.2%</span>
                   </div>
                 </div>
                 <div className={metricCardClass}>
                   <div className="bg-[#25D366]/20 p-3 rounded-full mb-2"><MdOutlineReply className="text-[#25D366] text-2xl" /></div>
-                  <div className="text-3xl font-bold text-white">845</div>
+                  <div className="text-3xl font-bold text-white">138</div>
                   <div className="text-white/60 mt-1">Replied</div>
                   <div className="text-blue-500 text-sm mt-1 flex items-center gap-1">
                     <MdOutlineTrendingUp />
@@ -1433,11 +1497,11 @@ const OutreachTracking = () => {
                 </div>
                 <div className={metricCardClass}>
                   <div className="bg-[#25D366]/20 p-3 rounded-full mb-2"><MdOutlineTrendingUp className="text-[#25D366] text-2xl" /></div>
-                  <div className="text-3xl font-bold text-white">67</div>
-                  <div className="text-white/60 mt-1">Meetings</div>
+                  <div className="text-3xl font-bold text-white">89</div>
+                  <div className="text-white/60 mt-1">Government Interest</div>
                   <div className="text-blue-500 text-sm mt-1 flex items-center gap-1">
                     <MdOutlineTrendingUp />
-                    <span>+92.1%</span>
+                    <span>+112.4%</span>
                   </div>
                 </div>
               </div>

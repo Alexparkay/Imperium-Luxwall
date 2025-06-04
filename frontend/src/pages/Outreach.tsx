@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MdArrowBack, MdArrowForward, MdOutlineEmail, MdScheduleSend, MdSend, MdOutlinePersonAdd, MdOutlineSettings, MdOutlineRule } from 'react-icons/md';
-import { FaRegCopy, FaRegEdit, FaRegSave, FaRegTrashAlt, FaRegLightbulb, FaDatabase, FaRegChartBar, FaLinkedin, FaWhatsapp, FaMicrophone, FaComments, FaPlay } from 'react-icons/fa';
+import { FaRegCopy, FaRegEdit, FaRegSave, FaRegTrashAlt, FaRegLightbulb, FaDatabase, FaRegChartBar, FaLinkedin, FaWhatsapp, FaMicrophone, FaComments, FaPlay, FaPause } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { RiFlowChart, RiMailSendLine, RiMailCheckLine, RiMailCloseLine, RiArrowRightLine, RiSplitCellsHorizontal } from 'react-icons/ri';
@@ -17,19 +17,23 @@ interface Enterprise {
   analysis: {
     enterpriseType: string;
     employees: number;
-    sapUserRate: number;
-    systemComplexity: number;
+    buildingSize: number;
+    currentEnergyCost: number;
+    annualkWh: number;
+    costPerkWh: number;
   };
   operationalAssessment: {
-    annualCost: number;
-    annualMaintenance: number;
+    currentAnnualCost: number;
+    projectedSavings: number;
+    paybackPeriod: number;
+    efficiency: number;
   };
   migrationPotential: {
     calculated: boolean;
-    totalUsers: number;
+    totalSavings: number;
     selectedSystemType: string;
     annualSavings: number;
-    migrationCost: number;
+    installationCost: number;
     operationalSavings: number;
     paybackPeriod: number;
     roi: number;
@@ -103,272 +107,192 @@ const EmailAutomation = () => {
   const [activeTab, setActiveTab] = useState<TabType>('email');
   const [selectedMessage, setSelectedMessage] = useState<WhatsAppMessage | null>(null);
   
+  // Audio playback state
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [audioProgress, setAudioProgress] = useState(0);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
   // Email templates
   const templates = [
     {
-      id: 'ai_highest_initial',
-      name: 'AI Highest Rated: Initial Contact',
-      subject: "Your vintage Tigers collection caught my eye at MGM Grand Detroit",
-      rating: 98.7,
+      id: 'coleman_young_initial',
+      name: 'Coleman Young Building: Initial Contact',
+      subject: "Your sustainability initiatives at Coleman A. Young Municipal caught my attention",
+      rating: 96.8,
       sequence: 'sequence_1',
       sequencePosition: 1,
       ai_metrics: {
-        openRate: 78.4,
-        responseRate: 42.1,
-        conversionRate: 31.5
+        openRate: 84.2,
+        responseRate: 48.7,
+        conversionRate: 35.8
       },
-      body: `Dear Carlos,
+      body: `Dear Patricia,
 
-Visited MGM Grand Detroit a few weeks ago and couldn't help but notice your incredible vintage Detroit Tigers memorabilia collection in your office - that 1984 World Series signed ball is absolutely stunning.
+I noticed the recent Detroit Free Press article about the city's ambitious energy efficiency goals for municipal buildings - particularly impressed by your leadership in implementing cost-saving measures while maintaining essential services for Detroit residents.
 
-That visit actually made me take a closer look at your facility's windows. After running preliminary calculations based on your building's square footage and current HVAC load, I've identified a significant opportunity: upgrading to high-performance energy-efficient windows could reduce your annual energy costs by approximately $847,000 - that's a 34% reduction in your current energy spend.
+That article actually made me take a closer look at the Coleman A. Young Municipal Building's energy profile. After analyzing your 780,000 sq ft facility built in 1954, I've identified a significant opportunity: upgrading to high-performance energy-efficient windows could reduce your annual energy costs by approximately $482,000 - that's an 18.5% reduction from your current $2.6M energy spend.
 
-For a facility of MGM Grand's scale (630,000 sq ft), this translates to:
-• $70,583 in monthly energy savings
-• 18-24 month payback period
-• $2.1M in total savings over 3 years
-• 42% reduction in HVAC operational costs
+For a facility of Coleman Young's scale and critical operations, this translates to:
+• $40,167 in monthly energy savings
+• 18-month payback period
+• $900,000 in total savings over 3 years
+• 94% improvement in thermal efficiency
+• Significant reduction in citizen comfort complaints during peak summer/winter months
 
-These projections are based on analysis of 12 similar casino retrofits across the Midwest, all showing consistent 30-40% energy cost reductions. Given Detroit's climate variations, the thermal efficiency gains are particularly significant during both winter heating and summer cooling seasons.
+These projections are based on your building's current 16.8 million kWh annual consumption at $0.1528/kWh, factoring in the 1954 construction with aging window systems typical of that era.
 
-Hope this perspective proves valuable for your facility optimization planning.
+Given Detroit's commitment to fiscal responsibility and energy independence, I thought these findings might be valuable for your facility planning.
 
 Best regards,
 {{name}}`
     },
     {
-      id: 'ai_highest_followup1',
-      name: 'AI Highest Rated: Follow-up 1',
-      subject: "Quick follow-up: MGM Grand Detroit energy efficiency opportunity",
-      rating: 97.9,
+      id: 'coleman_young_followup1',
+      name: 'Coleman Young Building: Follow-up 1',
+      subject: "Quick follow-up: Coleman Young Municipal energy efficiency opportunity",
+      rating: 94.5,
       sequence: 'sequence_1',
       sequencePosition: 2,
       ai_metrics: {
-        openRate: 82.1,
-        responseRate: 38.4,
-        conversionRate: 26.9
+        openRate: 79.3,
+        responseRate: 41.2,
+        conversionRate: 28.4
       },
-      body: `Hi Carlos,
+      body: `Hi Patricia,
 
-Following up briefly on my previous email about MGM Grand Detroit's $847,000 annual energy savings opportunity.
+Following up briefly on my previous email about the Coleman A. Young Municipal Building's $482,000 annual energy savings opportunity.
 
-I wanted to share that our recent analysis of casino retrofits shows particularly strong results for facilities that upgrade their window systems during off-peak seasons. Properties similar to MGM Grand have seen 38% faster ROI realization and 42% reduction in ongoing maintenance costs when installations are completed during slower winter months.
+I wanted to share additional context that might be relevant for your municipal planning: our analysis shows that government buildings with similar profiles (750K+ sq ft, built pre-1960) have seen particularly strong results when upgrading their window systems during off-peak budget cycles.
 
-If you're interested in these findings, I'd be happy to forward our casino industry benchmark report.
+Specifically for buildings like Coleman Young:
+• Average 18% reduction in HVAC operational costs
+• 94% improvement in thermal consistency across all floors
+• Reduced maintenance calls during extreme Detroit weather events
+• Enhanced security and noise reduction benefits for downtown operations
+
+The $31,000 monthly installation timeline we typically see allows for phased implementation without disrupting essential city services.
+
+If these findings align with Detroit's infrastructure modernization priorities, I'd be happy to share our complete municipal building analysis.
 
 Best,
 {{name}}`
     },
     {
-      id: 'ai_highest_followup2',
-      name: 'AI Highest Rated: Follow-up 2',
-      subject: "Final thoughts on MGM Grand Detroit's energy efficiency opportunity",
-      rating: 96.2,
+      id: 'coleman_young_followup2',
+      name: 'Coleman Young Building: Final Follow-up',
+      subject: "Final thoughts on Coleman Young Municipal's energy optimization",
+      rating: 92.1,
       sequence: 'sequence_1',
       sequencePosition: 3,
       ai_metrics: {
-        openRate: 79.6,
-        responseRate: 31.2,
-        conversionRate: 18.7
+        openRate: 76.8,
+        responseRate: 33.9,
+        conversionRate: 22.3
       },
-      body: `Dear Carlos,
+      body: `Dear Patricia,
 
-I'm reaching out one final time regarding the $847,000 annual energy savings analysis we conducted for MGM Grand Detroit.
+I'm reaching out one final time regarding the $482,000 annual energy savings analysis we conducted for the Coleman A. Young Municipal Building.
 
-Since my last email, we've completed an additional study of casino properties who recently upgraded their window systems. The data revealed three particularly relevant findings for your Detroit operations:
+Since my last email, I've completed additional research on municipal building retrofits in the Great Lakes region. Three findings that may be particularly relevant for Detroit's operations:
 
-1. Casino facilities with 24/7 operations (which we understand is central to MGM Grand's business model) achieved 31% greater energy savings compared to standard commercial buildings due to consistent HVAC demands.
+1. Municipal buildings with 24/7 security and emergency services (like Coleman Young) achieved 22% greater energy savings compared to standard office buildings due to consistent HVAC demands.
 
-2. The installation timeline for properties that utilized phased approaches averaged just 4.2 months - nearly 45% faster than full-facility shutdowns, with zero impact on guest experience.
+2. The phased installation approach we recommend averages just 3.8 months for buildings of Coleman Young's size, with zero impact on essential city services or public access.
 
-3. Integration with existing building management systems was completed seamlessly, with 94% of properties reporting improved climate control precision and guest comfort scores.
+3. Detroit's climate zone provides optimal conditions for high-performance window systems, with buildings seeing 15% better performance than national averages due to the significant temperature variations throughout the year.
 
-The full dataset encompasses 16 casino properties across the Great Lakes region, with an average size of 500,000-800,000 sq ft and annual energy costs of $2.1-3.8M.
+Given your facility's role as the center of Detroit's government operations and the city's commitment to fiscal responsibility, the complete analysis showing $900,000 in three-year savings remains available should it align with your infrastructure priorities.
 
-Should these findings align with your current facility optimization priorities, our complete analysis remains available.
-
-Wishing you continued success with MGM Grand's operational excellence.
+Thank you for your time and continued dedication to serving Detroit residents efficiently.
 
 Best regards,
 {{name}}`
     },
     {
-      id: 'sequence2_initial',
-      name: 'Value-Focused: Initial Contact',
-      subject: "MGM Grand Detroit energy optimization - potential $847K annual savings",
-      rating: 92.4,
+      id: 'detroit_value_initial',
+      name: 'Detroit-Focused: Value Proposition',
+      subject: "Coleman Young Municipal Building - potential $482K annual savings opportunity",
+      rating: 91.7,
       sequence: 'sequence_2',
       sequencePosition: 1,
       ai_metrics: {
-        openRate: 71.3,
-        responseRate: 36.8,
-        conversionRate: 24.5
+        openRate: 77.8,
+        responseRate: 39.4,
+        conversionRate: 26.1
       },
-      body: `Dear Carlos,
+      body: `Dear Patricia,
 
-Your recent feature in Casino Operations Magazine about MGM Grand Detroit's sustainability initiatives caught my attention, particularly your emphasis on creating energy-efficient operations while maintaining exceptional guest experiences.
+Your recent work on Detroit's municipal efficiency initiatives, as highlighted in the city's sustainability report, caught my attention - particularly your focus on reducing operational costs while maintaining exceptional public services.
 
-After reviewing your facility's energy profile, our team has identified a significant optimization opportunity: upgrading to high-performance energy-efficient windows could yield $847,000 in annual energy savings - that's a 34% reduction in your current energy costs.
+After reviewing the Coleman A. Young Municipal Building's energy profile, our team has identified a significant optimization opportunity: upgrading to high-performance energy-efficient windows could yield $482,000 in annual energy savings - that's an 18.5% reduction from your current $2.6M energy costs.
 
-Specific benefits for MGM Grand Detroit:
-• $70,583 monthly energy cost reduction
-• 18-24 month payback period
-• $2.1M total savings over 3 years
-• 42% improvement in guest comfort consistency across all floors
-• Enhanced noise reduction from Detroit's urban environment
-• 28% decrease in peak demand charges during summer months
+Specific benefits for Coleman Young Municipal:
+• $40,167 monthly energy cost reduction
+• 18-month payback period for the city
+• $900,000 total savings over 3 years
+• 94% improvement in building climate consistency
+• Enhanced security and noise reduction for downtown operations
+• 22% decrease in maintenance requests during extreme weather
 
-With energy costs continuing to rise and sustainability becoming increasingly important to guests, properties in your sector are typically seeing these results within 4-6 months of installation. Based on MGM Grand's scale and operational requirements, our projected installation would complete by Q3 2024, positioning you ahead of the peak summer cooling season.
+With your building's 780,000 sq ft and critical role housing essential city services, these improvements would position Detroit ahead of other major cities in municipal energy efficiency. The installation timeline accommodates government operations with zero service disruption.
 
-These insights come from our analysis of 16 similar retrofits within casino and hospitality properties during 2022-2024.
+These insights come from our analysis of similar municipal retrofits completed in 2022-2024 across the Midwest.
 
-I hope this information proves valuable as you evaluate your facility optimization roadmap.
-
-Best regards,
-{{name}}`
-    },
-    {
-      id: 'sequence2_followup1',
-      name: 'Value-Focused: Follow-up 1',
-      subject: "RE: MGM Grand Detroit's energy profile - specific casino industry findings",
-      rating: 89.5,
-      sequence: 'sequence_2',
-      sequencePosition: 2,
-      ai_metrics: {
-        openRate: 68.7,
-        responseRate: 31.4,
-        conversionRate: 19.8
-      },
-      body: `Carlos,
-
-I wanted to follow up on my previous email about the $847,000 annual savings opportunity for MGM Grand Detroit.
-
-In analyzing similar properties that upgraded to high-performance window systems:
-
-- Casino facilities with gaming floors saw average energy cost reductions of 36% for climate control systems
-- Properties with hotel towers experienced 42% improvement in guest comfort scores and noise reduction
-- Detroit-area installations benefited from local weather patterns, achieving 28% better performance than national averages during winter months
-
-If any of these areas align with your current operational challenges, I'd be happy to share the detailed findings from our casino industry analysis.
-
-Best regards,
-{{name}}`
-    },
-    {
-      id: 'problem_solution',
-      name: 'Problem-Solution: Initial Contact',
-      subject: "Addressing MGM Grand Detroit's energy efficiency challenges with window optimization",
-      rating: 86.3,
-      sequence: 'sequence_3',
-      sequencePosition: 1,
-      ai_metrics: {
-        openRate: 65.9,
-        responseRate: 28.7,
-        conversionRate: 17.4
-      },
-      body: `Dear Carlos,
-
-I recently reviewed MGM Grand Detroit's impressive sustainability initiatives as highlighted in the Detroit Business Journal. Your commitment to reducing operational costs while enhancing guest experience particularly stands out in a competitive market.
-
-This prompted our research team to examine energy efficiency opportunities for your facility. Our analysis reveals that upgrading to high-performance energy-efficient windows could deliver $847,000 in annual savings - a 34% reduction in energy costs.
-
-Specific benefits for MGM Grand Detroit:
-• $70,583 monthly energy savings
-• 18-24 month payback period
-• $2.1M total savings over 3 years
-• 67% decrease in guest comfort complaints
-• 89% improved climate control consistency across all zones
-
-These findings address three primary challenges we've identified in facilities with comparable square footage (600,000-700,000 sq ft):
-
-1. Energy loss becomes increasingly costly as utility rates rise, with facilities spending 35-42% more on HVAC than necessary due to poor thermal performance
-
-2. Guest comfort complaints require constant HVAC adjustments, typically costing $180K-240K annually in additional maintenance and energy costs
-
-3. Integration with modern building management systems creates inefficiencies, with temperature variance averaging 4-6 degrees across different zones
-
-These findings stem from our analysis of 19 casino and hospitality properties that upgraded their window systems between 2021-2024.
-
-I hope this perspective provides valuable context for your facility optimization strategy.
+I hope this information proves valuable as Detroit continues leading in sustainable municipal operations.
 
 Best regards,
 {{name}}`
     }
   ];
   
-  // Contact data - Facility/Building Operations leadership contacts
+  // Contact data - Updated for Coleman A. Young Municipal Building
   const contacts = [
     {
       id: 1,
-      name: "Carlos Lee",
-      email: "c.lee@mgmgrand.com",
-      company: "MGM Grand Detroit Hotel & Casino",
+      name: "Patricia Williams",
+      email: "p.williams@detroitmi.gov",
+      company: "Coleman A. Young Municipal Building",
       location: "Detroit, Michigan",
-      position: "Building Operations Manager",
-      phone: "+1 (313) 555-1234"
+      position: "Facilities Operations Director",
+      phone: "+1 (313) 224-3400"
     },
     {
       id: 2,
-      name: "Maria Rodriguez",
-      email: "m.rodriguez@caesars.com",
-      company: "Caesars Palace",
-      location: "Las Vegas, Nevada",
-      position: "Facilities Director",
-      phone: "+1 (702) 555-2345"
+      name: "Marcus Johnson",
+      email: "m.johnson@detroitmi.gov",
+      company: "Coleman A. Young Municipal Building",
+      location: "Detroit, Michigan",
+      position: "Energy Management Coordinator",
+      phone: "+1 (313) 224-3401"
     },
     {
       id: 3,
-      name: "David Chen",
-      email: "d.chen@mohegansun.com",
-      company: "Mohegan Sun",
-      location: "Uncasville, Connecticut",
-      position: "Energy Management Director",
-      phone: "+1 (860) 555-3456"
+      name: "Jennifer Rodriguez",
+      email: "j.rodriguez@detroitmi.gov",
+      company: "Detroit General Services Department",
+      location: "Detroit, Michigan",
+      position: "Building Operations Manager",
+      phone: "+1 (313) 224-2156"
     },
     {
       id: 4,
-      name: "Jennifer Walsh",
-      email: "j.walsh@foxwoods.com",
-      company: "Foxwoods Resort Casino",
-      location: "Mashantucket, Connecticut",
-      position: "Building Operations Manager",
-      phone: "+1 (860) 555-4567"
+      name: "David Chen",
+      email: "d.chen@detroitmi.gov",
+      company: "Detroit Public Works",
+      location: "Detroit, Michigan",
+      position: "Facilities Maintenance Director",
+      phone: "+1 (313) 224-1847"
     },
     {
       id: 5,
-      name: "Michael Thompson",
-      email: "m.thompson@hardrock.com",
-      company: "Hard Rock Hotel & Casino",
-      location: "Atlantic City, New Jersey",
-      position: "Facilities Manager",
-      phone: "+1 (609) 555-5678"
-    },
-    {
-      id: 6,
-      name: "Sarah Kim",
-      email: "s.kim@borgata.com",
-      company: "Borgata Hotel Casino & Spa",
-      location: "Atlantic City, New Jersey",
-      position: "Energy Efficiency Manager",
-      phone: "+1 (609) 555-6789"
-    },
-    {
-      id: 7,
-      name: "Robert Martinez",
-      email: "r.martinez@windcreek.com",
-      company: "Wind Creek Casino",
-      location: "Bethlehem, Pennsylvania",
-      position: "Building Operations Director",
-      phone: "+1 (610) 555-7890"
-    },
-    {
-      id: 8,
-      name: "Lisa Johnson",
-      email: "l.johnson@motorcity.com",
-      company: "MotorCity Casino Hotel",
+      name: "Sarah Thompson",
+      email: "s.thompson@detroitmi.gov",
+      company: "Coleman A. Young Municipal Building",
       location: "Detroit, Michigan",
-      position: "Facilities Operations Manager",
-      phone: "+1 (313) 555-8901"
+      position: "Sustainability Coordinator",
+      phone: "+1 (313) 224-3405"
     }
   ];
 
@@ -378,27 +302,45 @@ Best regards,
     name: 'LinkedIn Voice Message',
     message: `Hi {{name}},
 
-I noticed your recent post about {{company}}'s sustainability initiatives and was particularly impressed by your insights on balancing operational efficiency with guest experience.
+I saw your recent LinkedIn post about Detroit's municipal sustainability initiatives and was impressed by your commitment to both fiscal responsibility and environmental stewardship.
 
-After analyzing your facility's energy profile, I've identified some compelling opportunities for optimization. Specifically, with your 630,000 sq ft facility, upgrading to high-performance energy-efficient windows could reduce your annual energy costs by approximately $847,000 - that's a 34% reduction.
+After looking into the Coleman A. Young Municipal Building's operations, I've identified some compelling energy optimization opportunities. With your 780,000 sq ft facility currently spending $2.6M annually on energy, upgrading to high-performance windows could reduce those costs by $482,000 per year - that's an 18.5% reduction with an 18-month payback.
 
-I'd love to share a detailed analysis of how this could work for {{company}}. Would you be open to a brief conversation?
+I'd love to share the detailed analysis of how this could work for Detroit's municipal operations. Would you be open to a brief conversation about these potential savings?
 
 Best regards,
 [Your Name]`
   };
 
-  // Add WhatsApp message templates
-  const whatsappTemplates = [
+  // Add WhatsApp message templates with Coleman Young specific information
+  const whatsappFlow: WhatsAppMessage[] = [
     {
-      id: 'initial_contact',
+      id: 'initial',
+      type: 'initial',
       name: 'Initial Contact',
-      message: "Hello [name], I'm reaching out regarding [company]'s SAP migration potential. Our analysis shows significant cost savings opportunities. Would you be interested in a brief discussion?"
+      message: "Hello {{name}}, I noticed Detroit's recent sustainability initiatives and analyzed the Coleman A. Young Municipal Building's energy profile. Our calculations show potential annual savings of $482,000 (18.5% reduction) through window optimization. Would you be interested in a brief discussion about these findings?",
+      day: 0
     },
     {
-      id: 'follow_up',
-      name: 'Follow-up',
-      message: "Hi [name], just following up on the SAP migration analysis for [company]. The potential annual savings of $894,250 (73.5% reduction) might be of interest. When would be a good time to discuss?"
+      id: 'followup1',
+      type: 'followup1',
+      name: 'First Follow-up',
+      message: "Hi {{name}}, following up on the Coleman Young Municipal energy analysis. The potential $482,000 annual savings represents significant budget relief for Detroit operations. Given your building's 780K sq ft and $2.6M current energy costs, when would be a good time to discuss these opportunities?",
+      day: 3
+    },
+    {
+      id: 'followup2',
+      type: 'followup2',
+      name: 'Second Follow-up',
+      message: "Hello {{name}}, wanted to ensure you received our analysis of Coleman Young Municipal's energy optimization potential. With Detroit's focus on fiscal efficiency, the 18-month payback and $900K three-year savings might align well with municipal planning priorities.",
+      day: 5
+    },
+    {
+      id: 'final',
+      type: 'final',
+      name: 'Final Message',
+      message: "Hi {{name}}, this is my final note regarding Coleman Young Municipal's energy efficiency opportunity. Our analysis showing $482,000 in annual savings remains available if you'd like to review it in the future for Detroit's infrastructure planning.",
+      day: 7
     }
   ];
 
@@ -409,7 +351,7 @@ Best regards,
       setIsLoading(false);
       
       // Set default template
-      const defaultTemplate = templates.find(t => t.id === 'ai_highest_initial');
+      const defaultTemplate = templates.find(t => t.id === 'coleman_young_initial');
       if (defaultTemplate) {
         setEmailSubject(defaultTemplate.subject);
         setEmailBody(defaultTemplate.body);
@@ -478,6 +420,46 @@ Best regards,
       const modal = document.getElementById('message-preview') as HTMLDialogElement;
       if (modal) modal.showModal();
     }
+  };
+
+  // Audio control functions
+  const toggleAudioPlayback = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        audioRef.current.play();
+        setIsPlaying(true);
+      }
+    }
+  };
+
+  const handleAudioTimeUpdate = () => {
+    if (audioRef.current) {
+      const current = audioRef.current.currentTime;
+      const total = audioRef.current.duration;
+      setCurrentTime(current);
+      setAudioProgress((current / total) * 100);
+    }
+  };
+
+  const handleAudioLoadedMetadata = () => {
+    if (audioRef.current) {
+      setDuration(audioRef.current.duration);
+    }
+  };
+
+  const handleAudioEnded = () => {
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setAudioProgress(0);
+  };
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   if (isLoading) {
@@ -840,7 +822,7 @@ Best regards,
                             </div>
                             
                             <div className="mt-3 p-2 bg-blue-500/10 border border-blue-500/20 rounded text-xs text-white/80">
-                              <span className="text-blue-400 font-medium">AI Recommendation:</span> This message is optimized for Carlos Lee's profile as Building Operations Manager at MGM Grand Detroit. The specific mention of his Tigers memorabilia collection increases personal connection by 52%.
+                              <span className="text-blue-400 font-medium">AI Recommendation:</span> This message is optimized for Patricia Williams' profile as Facilities Operations Director at Coleman A. Young Municipal Building. The specific mention of Detroit's sustainability initiatives and municipal efficiency increases personal connection by 67%.
                             </div>
                           </div>
                         </div>
@@ -1203,18 +1185,64 @@ Best regards,
                       </div>
                     </div>
                     <div className="bg-[#1A1A1A] rounded-lg p-4">
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
-                          <button className="w-12 h-12 rounded-full bg-[#0A66C2] hover:bg-[#0A66C2]/80 flex items-center justify-center transition-colors">
-                            <FaPlay size={20} className="text-white" />
-                </button>
+                          <button 
+                            onClick={toggleAudioPlayback}
+                            className="w-12 h-12 rounded-full bg-[#0A66C2] hover:bg-[#0A66C2]/80 flex items-center justify-center transition-colors"
+                          >
+                            {isPlaying ? (
+                              <FaPause size={20} className="text-white" />
+                            ) : (
+                              <FaPlay size={20} className="text-white ml-1" />
+                            )}
+                          </button>
                           <div className="text-white">Voice Message</div>
-              </div>
-                        <div className="text-white/60 text-sm">0:45</div>
+                        </div>
+                        <div className="text-white/60 text-sm">
+                          {duration > 0 ? `${formatTime(currentTime)} / ${formatTime(duration)}` : '0:00 / 0:00'}
+                        </div>
                       </div>
-                      <div className="mt-4 h-2 bg-[#2A2A2A] rounded-full overflow-hidden">
-                        <div className="h-full w-0 bg-[#0A66C2] rounded-full animate-pulse"></div>
+                      
+                      {/* Audio Progress Bar */}
+                      <div className="relative h-2 bg-[#2A2A2A] rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-[#0A66C2] rounded-full transition-all duration-200"
+                          style={{ width: `${audioProgress}%` }}
+                        ></div>
+                        {isPlaying && (
+                          <div className="absolute inset-0 overflow-hidden">
+                            <div className="h-full bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
+                          </div>
+                        )}
                       </div>
+                      
+                      {/* Waveform Animation */}
+                      {isPlaying && (
+                        <div className="flex items-center justify-center gap-1 mt-3">
+                          {Array.from({ length: 20 }).map((_, i) => (
+                            <div
+                              key={i}
+                              className="w-1 bg-[#0A66C2] rounded-full"
+                              style={{
+                                height: `${Math.random() * 20 + 5}px`,
+                                animation: `pulse ${Math.random() * 0.5 + 0.5}s ease-in-out infinite alternate`,
+                                animationDelay: `${i * 0.1}s`
+                              }}
+                            />
+                          ))}
+                        </div>
+                      )}
+                      
+                      {/* Hidden Audio Element */}
+                      <audio
+                        ref={audioRef}
+                        src="/Voice_Note/Recording.m4a"
+                        onTimeUpdate={handleAudioTimeUpdate}
+                        onLoadedMetadata={handleAudioLoadedMetadata}
+                        onEnded={handleAudioEnded}
+                        preload="metadata"
+                      />
                     </div>
             </div>
           </div>
@@ -1402,10 +1430,10 @@ Best regards,
                         <td>
                           <input type="checkbox" className="checkbox checkbox-xs checkbox-info" checked />
                         </td>
-                        <td className="font-medium text-white">{contacts[5].name}</td>
-                        <td className="text-white/80">{contacts[5].company}</td>
-                        <td className="text-white/80">{contacts[5].position}</td>
-                        <td>{contacts[5].location}</td>
+                        <td className="font-medium text-white">{contacts[2]?.name || "Contact 3"}</td>
+                        <td className="text-white/80">{contacts[2]?.company || "Company 3"}</td>
+                        <td className="text-white/80">{contacts[2]?.position || "Position 3"}</td>
+                        <td>{contacts[2]?.location || "Location 3"}</td>
                         <td className="text-right">
                           <span className="text-[#0A66C2] text-sm">Connected</span>
                         </td>
@@ -1414,10 +1442,10 @@ Best regards,
                         <td>
                           <input type="checkbox" className="checkbox checkbox-xs checkbox-info" />
                         </td>
-                        <td className="font-medium text-white">{contacts[6].name}</td>
-                        <td className="text-white/80">{contacts[6].company}</td>
-                        <td className="text-white/80">{contacts[6].position}</td>
-                        <td>{contacts[6].location}</td>
+                        <td className="font-medium text-white">{contacts[3]?.name || "Contact 4"}</td>
+                        <td className="text-white/80">{contacts[3]?.company || "Company 4"}</td>
+                        <td className="text-white/80">{contacts[3]?.position || "Position 4"}</td>
+                        <td>{contacts[3]?.location || "Location 4"}</td>
                         <td className="text-right">
                           <span className="text-yellow-400 text-sm">Viewed profile</span>
                         </td>
@@ -1426,10 +1454,10 @@ Best regards,
                         <td>
                           <input type="checkbox" className="checkbox checkbox-xs checkbox-info" />
                         </td>
-                        <td className="font-medium text-white">{contacts[7].name}</td>
-                        <td className="text-white/80">{contacts[7].company}</td>
-                        <td className="text-white/80">{contacts[7].position}</td>
-                        <td>{contacts[7].location}</td>
+                        <td className="font-medium text-white">{contacts[4]?.name || "Contact 5"}</td>
+                        <td className="text-white/80">{contacts[4]?.company || "Company 5"}</td>
+                        <td className="text-white/80">{contacts[4]?.position || "Position 5"}</td>
+                        <td>{contacts[4]?.location || "Location 5"}</td>
                         <td className="text-right">
                           <span className="text-red-400 text-sm">Not connected</span>
                         </td>
@@ -1623,7 +1651,7 @@ Best regards,
                     </div>
                     <div>
                       <h3 className="text-lg font-medium text-white">Message Preview</h3>
-                      <p className="text-sm text-white/60">Personalized for {contacts[0].name}</p>
+                      <p className="text-sm text-white/60">Personalized for {contacts[0]?.name || "Contact"}</p>
                     </div>
                   </div>
                   
@@ -1633,9 +1661,9 @@ Best regards,
                         <FaWhatsapp size={16} className="text-white" />
                       </div>
                       <div className="flex-1">
-                        <div className="font-medium text-white mb-1">{contacts[0].name}</div>
+                        <div className="font-medium text-white mb-1">{contacts[0]?.name || "Contact"}</div>
                         <div className="text-white/80">
-                          {selectedMessage?.message.replace('[name]', contacts[0].name).replace('[company]', contacts[0].company)}
+                          {selectedMessage?.message?.replace('[name]', contacts[0]?.name || "Contact").replace('[company]', contacts[0]?.company || "Company") || "Message not available"}
                         </div>
                         <div className="text-xs text-white/40 mt-2">12:45 PM</div>
                       </div>
@@ -1700,10 +1728,10 @@ Best regards,
                         <td>
                           <input type="checkbox" className="checkbox checkbox-xs checkbox-success" />
                         </td>
-                        <td className="font-medium text-white">{contacts[3].name}</td>
-                        <td className="text-white/80">{contacts[3].phone}</td>
-                        <td>{contacts[3].company}</td>
-                        <td className="text-white/80">{contacts[3].position}</td>
+                        <td className="font-medium text-white">{contacts[3]?.name || "Contact 4"}</td>
+                        <td className="text-white/80">{contacts[3]?.phone || "+1 (000) 000-0004"}</td>
+                        <td>{contacts[3]?.company || "Company 4"}</td>
+                        <td className="text-white/80">{contacts[3]?.position || "Position 4"}</td>
                         <td className="text-right">
                           <span className="text-[#25D366] text-sm">Previously contacted</span>
                         </td>
@@ -1712,10 +1740,10 @@ Best regards,
                         <td>
                           <input type="checkbox" className="checkbox checkbox-xs checkbox-success" checked />
                         </td>
-                        <td className="font-medium text-white">{contacts[4].name}</td>
-                        <td className="text-white/80">{contacts[4].phone}</td>
-                        <td>{contacts[4].company}</td>
-                        <td className="text-white/80">{contacts[4].position}</td>
+                        <td className="font-medium text-white">{contacts[4]?.name || "Contact 5"}</td>
+                        <td className="text-white/80">{contacts[4]?.phone || "+1 (000) 000-0005"}</td>
+                        <td>{contacts[4]?.company || "Company 5"}</td>
+                        <td className="text-white/80">{contacts[4]?.position || "Position 5"}</td>
                         <td className="text-right">
                           <span className="text-green-400 text-sm">Responded to email</span>
                         </td>
@@ -1724,10 +1752,10 @@ Best regards,
                         <td>
                           <input type="checkbox" className="checkbox checkbox-xs checkbox-success" />
                         </td>
-                        <td className="font-medium text-white">{contacts[7].name}</td>
-                        <td className="text-white/80">{contacts[7].phone}</td>
-                        <td>{contacts[7].company}</td>
-                        <td className="text-white/80">{contacts[7].position}</td>
+                        <td className="font-medium text-white">{contacts[1]?.name || "Contact 2"}</td>
+                        <td className="text-white/80">{contacts[1]?.phone || "+1 (000) 000-0002"}</td>
+                        <td>{contacts[1]?.company || "Company 2"}</td>
+                        <td className="text-white/80">{contacts[1]?.position || "Position 2"}</td>
                         <td className="text-right">
                           <span className="text-yellow-400 text-sm">Scheduled meeting</span>
                         </td>
@@ -1736,10 +1764,10 @@ Best regards,
                         <td>
                           <input type="checkbox" className="checkbox checkbox-xs checkbox-success" disabled />
                         </td>
-                        <td className="font-medium text-white opacity-50">{contacts[2].name}</td>
-                        <td className="text-white/80 opacity-50">{contacts[2].phone}</td>
-                        <td className="opacity-50">{contacts[2].company}</td>
-                        <td className="text-white/80 opacity-50">{contacts[2].position}</td>
+                        <td className="font-medium text-white opacity-50">{contacts[2]?.name || "Contact 3"}</td>
+                        <td className="text-white/80 opacity-50">{contacts[2]?.phone || "+1 (000) 000-0003"}</td>
+                        <td className="opacity-50">{contacts[2]?.company || "Company 3"}</td>
+                        <td className="text-white/80 opacity-50">{contacts[2]?.position || "Position 3"}</td>
                         <td className="text-right">
                           <span className="text-red-400 text-sm">No prior contact</span>
                         </td>

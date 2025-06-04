@@ -351,44 +351,44 @@ const SignalScanner = () => {
         const sampleBuildings: Building[] = [
           {
             id: 1,
-            name: "MGM Grand Detroit Hotel & Casino",
-            buildingIdAddress: "1777 3rd Ave, Detroit, MI 48226",
-            address: "1777 3rd Ave, Detroit, MI 48226",
-            coordinates: "42.33361, -83.06028",
-            buildingType: "mixed-use",
-            propertyOwner: "Vici Properties and MGM Resorts International",
-            totalSquareFootage: "1650000 sq ft",
-            squareFootage: "1650000 sq ft",
-            estimatedAnnualKwh: "16080000",
-            annualEnergyUse: "16080000",
+            name: "Coleman A. Young Municipal Building",
+            buildingIdAddress: "2 Woodward Ave, Detroit, MI 48226",
+            address: "2 Woodward Ave, Detroit, MI 48226",
+            coordinates: "42.3291, -83.0442",
+            buildingType: "government",
+            propertyOwner: "Detroit-Wayne Joint Building Authority",
+            totalSquareFootage: "780000 sq ft",
+            squareFootage: "780000 sq ft",
+            estimatedAnnualKwh: "16815500",
+            annualEnergyUse: "16815500",
             commercialElectricityRate: "0.1528 $/kWh",
-            annualEnergyCost: "2450000 USD",
-            totalWindows: "600",
-            averageWindowSize: "Average window size: 1.5 m × 1.2 m",
-            windowToWallRatio: "0.34",
+            annualEnergyCost: "2600000 USD",
+            totalWindows: "1000",
+            averageWindowSize: "Average window size: 1.2 m × 1.5 m",
+            windowToWallRatio: "0.49",
             facadeOrientation: "north/south",
-            setPointTemperature: "70 °F / 21 °C",
+            setPointTemperature: "72 °F / 22 °C",
             historicalTemperatures: "January: 0°C / -6°C",
             temperatureDeltaSeries: "January: 11°C",
             annualTemperatureSwing: "34",
             monthlySolarIrradiance: "January: 2.98",
-            currentWindowRValue: "2",
-            energyStarScore: "65",
-            windowHeatLossCost: "142151 USD",
-            windowCoolingCost: "1154168 USD",
-            totalWindowEnergyCost: "1296319 USD",
-            luxwallProductRecommendation: "LuxWall Enthermal Plus™",
-            rValue: "20",
-            efficiencyImprovement: "90%",
+            currentWindowRValue: "1",
+            energyStarScore: "82",
+            windowHeatLossCost: "57000 USD",
+            windowCoolingCost: "455000 USD",
+            totalWindowEnergyCost: "513000 USD",
+            luxwallProductRecommendation: "LuxWall Enthermal™",
+            rValue: "18",
+            efficiencyImprovement: "94%",
             replaceableWindows: "100%",
-            postRetrofitEnergyCost: "129631 USD",
-            annualEnergySavings: "1166688 USD",
-            energyCostReduction: "47%",
-            installationCost: "972000 USD",
-            paybackRoiWithoutIncentives: "0.83333",
-            roiInYearsWithoutIncentives: "0.83333",
-            year: "2008",
-            floors: "17",
+            postRetrofitEnergyCost: "31000 USD",
+            annualEnergySavings: "482000 USD",
+            energyCostReduction: "18%",
+            installationCost: "900000 USD",
+            paybackRoiWithoutIncentives: "1.2",
+            roiInYearsWithoutIncentives: "1.2",
+            year: "1954",
+            floors: "20",
             status: "built",
             drawings: "0"
           },
@@ -757,49 +757,49 @@ const SignalScanner = () => {
                   <div className="w-2 h-2 bg-[#2a64f5] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                 </div>
               </div>
-              <p className="text-white/70 mb-6">Processing building energy data from multiple sources...</p>
+              <p className="text-white/70 mb-6">Locating building and analyzing structure...</p>
               
               {/* Real-time activity log */}
               <div className="mb-6 bg-black/20 rounded-xl p-4 border border-white/10 h-64 overflow-y-auto font-mono text-sm">
                 <div className="space-y-2">
                   <div className="text-[#2a64f5] animate-fadeIn">
-                    <span className="text-white/50">[00:00.12]</span> Initializing AI energy data extraction modules...
+                    <span className="text-white/50">[00:00.12]</span> Initializing building location modules...
                   </div>
                   <div className="text-[#2a64f5] animate-fadeIn" style={{ animationDelay: '300ms' }}>
-                    <span className="text-white/50">[00:00.35]</span> Establishing secure connection to building databases <BsShieldLock className="inline" />
+                    <span className="text-white/50">[00:00.35]</span> Establishing secure connection to mapping services <BsShieldLock className="inline" />
                   </div>
                   <div className="text-[#2a64f5] animate-fadeIn" style={{ animationDelay: '800ms' }}>
-                    <span className="text-white/50">[00:01.08]</span> Scraping building energy profile data from <TbWorldSearch className="inline" /> market intelligence APIs
+                    <span className="text-white/50">[00:01.08]</span> Searching building location database from <TbWorldSearch className="inline" /> satellite positioning APIs
                   </div>
                   <div className="text-blue-400 animate-fadeIn" style={{ animationDelay: '1200ms' }}>
-                    <span className="text-white/50">[00:01.45]</span> <BsGlobe className="inline" /> Accessing energy consumption history records (851 buildings)
+                    <span className="text-white/50">[00:01.45]</span> <BsGlobe className="inline" /> Accessing building coordinates and structural data
                   </div>
                   <div className="text-blue-400 animate-fadeIn" style={{ animationDelay: '1600ms' }}>
-                    <span className="text-white/50">[00:01.89]</span> <HiOutlineDatabase className="inline" /> Analyzing window efficiency metrics...
+                    <span className="text-white/50">[00:01.89]</span> <HiOutlineDatabase className="inline" /> Locating building perimeter and boundaries...
                   </div>
                   <div className="text-yellow-400 animate-fadeIn" style={{ animationDelay: '2000ms' }}>
-                    <span className="text-white/50">[00:02.13]</span> <AiOutlineApi className="inline" /> Accessing third-party energy analysis systems
+                    <span className="text-white/50">[00:02.13]</span> <AiOutlineApi className="inline" /> Accessing third-party mapping systems
                   </div>
                   <div className="text-purple-400 animate-fadeIn" style={{ animationDelay: '2400ms' }}>
-                    <span className="text-white/50">[00:02.55]</span> <BsCodeSlash className="inline" /> Extracting building architecture and energy dependencies
+                    <span className="text-white/50">[00:02.55]</span> <BsCodeSlash className="inline" /> Extracting building GPS coordinates and location data
                   </div>
                   <div className="text-blue-400 animate-fadeIn" style={{ animationDelay: '2800ms' }}>
-                    <span className="text-white/50">[00:03.02]</span> <AiOutlineFileSearch className="inline" /> Cross-referencing with industry energy benchmarks
+                    <span className="text-white/50">[00:03.02]</span> <AiOutlineFileSearch className="inline" /> Cross-referencing with property records
                   </div>
                   <div className="text-purple-400 animate-fadeIn" style={{ animationDelay: '3200ms' }}>
-                    <span className="text-white/50">[00:03.45]</span> <AiOutlineNodeIndex className="inline" /> Building energy dependency graph for optimization calculations
+                    <span className="text-white/50">[00:03.45]</span> <AiOutlineNodeIndex className="inline" /> Building spatial mapping for location verification
                   </div>
                   <div className="text-green-400 animate-fadeIn" style={{ animationDelay: '3600ms' }}>
-                    <span className="text-white/50">[00:03.98]</span> <BsGraphUp className="inline" /> Generating energy efficiency improvement projection models
+                    <span className="text-white/50">[00:03.98]</span> <BsGraphUp className="inline" /> Generating precise building location coordinates
                   </div>
                   <div className="text-yellow-400 animate-fadeIn" style={{ animationDelay: '4000ms' }}>
-                    <span className="text-white/50">[00:04.32]</span> <BsDiagram3 className="inline" /> Creating optimization opportunity map by building type
+                    <span className="text-white/50">[00:04.32]</span> <BsDiagram3 className="inline" /> Creating building footprint map
                   </div>
                   <div className="text-blue-400 animate-fadeIn" style={{ animationDelay: '4400ms' }}>
-                    <span className="text-white/50">[00:04.75]</span> <BsCloudDownload className="inline" /> Finalizing data compilation and enrichment
+                    <span className="text-white/50">[00:04.75]</span> <BsCloudDownload className="inline" /> Finalizing location data and coordinates
                   </div>
                   <div className="text-[#2a64f5] animate-fadeIn" style={{ animationDelay: '4800ms' }}>
-                    <span className="text-white/50">[00:04.98]</span> Analysis complete! Found <span className="text-white font-bold">{selectedBuildings ? selectedBuildings.length : 0}</span> optimization opportunities
+                    <span className="text-white/50">[00:04.98]</span> Location found! Building coordinates: <span className="text-white font-bold">42.3291°N, 83.0417°W</span>
                   </div>
                 </div>
               </div>
@@ -1477,31 +1477,31 @@ const SignalScanner = () => {
               <div className="flex flex-col md:flex-row gap-6">
                 <div className="flex-1">
                   <div className="bg-white/5 p-4 rounded-xl">
-                    <h4 className="text-lg font-medium text-white mb-2">{selectedBuildingForModal.name}</h4>
-                    <p className="text-white/70 text-sm mb-1">{selectedBuildingForModal.propertyOwner}</p>
+                    <h4 className="text-lg font-medium text-white mb-2">{selectedBuildingForModal?.name || 'Unknown Building'}</h4>
+                    <p className="text-white/70 text-sm mb-1">{selectedBuildingForModal?.propertyOwner || 'Unknown Owner'}</p>
                     <p className="text-white/70 text-sm mb-3">
                       <span className="inline-flex items-center gap-1">
                         <MdLocationOn className="text-[#2a64f5]" size={14} />
-                        {selectedBuildingForModal.address}
+                        {selectedBuildingForModal?.address || 'Unknown Address'}
                       </span>
                     </p>
                     
                     <div className="grid grid-cols-2 gap-3 mt-4">
                       <div>
                         <p className="text-xs text-white/50">Building Type</p>
-                        <p className="text-sm text-white">{selectedBuildingForModal.buildingType}</p>
+                        <p className="text-sm text-white">{selectedBuildingForModal?.buildingType || 'N/A'}</p>
                       </div>
                       <div>
                         <p className="text-xs text-white/50">Square Footage</p>
-                        <p className="text-sm text-white">{formatSquareFootage(selectedBuildingForModal.squareFootage)}</p>
+                        <p className="text-sm text-white">{selectedBuildingForModal ? formatSquareFootage(selectedBuildingForModal.squareFootage) : 'N/A'}</p>
                       </div>
                       <div>
                         <p className="text-xs text-white/50">Annual Energy Cost</p>
-                        <p className="text-sm text-white">{formatCurrency(selectedBuildingForModal.annualEnergyCost)}</p>
+                        <p className="text-sm text-white">{selectedBuildingForModal ? formatCurrency(selectedBuildingForModal.annualEnergyCost) : 'N/A'}</p>
                       </div>
                       <div>
                         <p className="text-xs text-white/50">Total Windows</p>
-                        <p className="text-sm text-white">{extractNumericValue(selectedBuildingForModal.totalWindows).toLocaleString()}</p>
+                        <p className="text-sm text-white">{selectedBuildingForModal ? extractNumericValue(selectedBuildingForModal.totalWindows).toLocaleString() : 'N/A'}</p>
                       </div>
                     </div>
                   </div>
@@ -1538,9 +1538,9 @@ const SignalScanner = () => {
                     <MdInfoOutline size={24} />
                   </div>
                   <div>
-                    <p className="text-white font-medium">See Behind the Scenes Data for {selectedBuildingForModal.name}</p>
+                    <p className="text-white font-medium">See Behind the Scenes Data for {selectedBuildingForModal?.name || 'this building'}</p>
                     <p className="text-white/70 text-sm mt-1">
-                      Go deeper into how we collected and analyzed energy performance metrics specifically for {selectedBuildingForModal.name}. Our visualizations reveal the exact data sources, analysis methods, and optimization potential we've identified for this building.
+                      Go deeper into how we collected and analyzed energy performance metrics specifically for {selectedBuildingForModal?.name || 'this building'}. Our visualizations reveal the exact data sources, analysis methods, and optimization potential we've identified for this building.
                     </p>
                   </div>
                 </div>

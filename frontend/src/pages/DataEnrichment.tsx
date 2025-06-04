@@ -351,44 +351,44 @@ const DataEnrichment = () => {
         const sampleBuildings: Building[] = [
           {
             id: 1,
-            name: "MGM Grand Detroit Hotel & Casino",
-            buildingIdAddress: "1777 3rd Ave, Detroit, MI 48226",
-            address: "1777 3rd Ave, Detroit, MI 48226",
-            coordinates: "42.33361, -83.06028",
-            buildingType: "mixed-use",
-            propertyOwner: "Vici Properties and MGM Resorts International",
-            totalSquareFootage: "1650000 sq ft",
-            squareFootage: "1650000 sq ft",
-            estimatedAnnualKwh: "16080000",
-            annualEnergyUse: "16080000",
+            name: "Coleman A. Young Municipal Building",
+            buildingIdAddress: "2 Woodward Ave, Detroit, MI 48226",
+            address: "2 Woodward Ave, Detroit, MI 48226",
+            coordinates: "42.3291, -83.0442",
+            buildingType: "government",
+            propertyOwner: "Detroit-Wayne Joint Building Authority",
+            totalSquareFootage: "780000 sq ft",
+            squareFootage: "780000 sq ft",
+            estimatedAnnualKwh: "16815500",
+            annualEnergyUse: "16815500",
             commercialElectricityRate: "0.1528 $/kWh",
-            annualEnergyCost: "2450000 USD",
-            totalWindows: "600",
-            averageWindowSize: "Average window size: 1.5 m × 1.2 m",
-            windowToWallRatio: "0.34",
+            annualEnergyCost: "2600000 USD",
+            totalWindows: "1000",
+            averageWindowSize: "Average window size: 1.2 m × 1.5 m",
+            windowToWallRatio: "0.49",
             facadeOrientation: "north/south",
-            setPointTemperature: "70 °F / 21 °C",
+            setPointTemperature: "72 °F / 22 °C",
             historicalTemperatures: "January: 0°C / -6°C",
             temperatureDeltaSeries: "January: 11°C",
             annualTemperatureSwing: "34",
             monthlySolarIrradiance: "January: 2.98",
-            currentWindowRValue: "2",
-            energyStarScore: "65",
-            windowHeatLossCost: "142151 USD",
-            windowCoolingCost: "1154168 USD",
-            totalWindowEnergyCost: "1296319 USD",
-            luxwallProductRecommendation: "LuxWall Enthermal Plus™",
-            rValue: "20",
-            efficiencyImprovement: "90%",
+            currentWindowRValue: "1",
+            energyStarScore: "82",
+            windowHeatLossCost: "57000 USD",
+            windowCoolingCost: "455000 USD",
+            totalWindowEnergyCost: "513000 USD",
+            luxwallProductRecommendation: "LuxWall Enthermal™",
+            rValue: "18",
+            efficiencyImprovement: "94%",
             replaceableWindows: "100%",
-            postRetrofitEnergyCost: "129631 USD",
-            annualEnergySavings: "1166688 USD",
-            energyCostReduction: "47%",
-            installationCost: "972000 USD",
-            paybackRoiWithoutIncentives: "0.83333",
-            roiInYearsWithoutIncentives: "0.83333",
-            year: "2008",
-            floors: "17",
+            postRetrofitEnergyCost: "31000 USD",
+            annualEnergySavings: "482000 USD",
+            energyCostReduction: "18%",
+            installationCost: "900000 USD",
+            paybackRoiWithoutIncentives: "1.2",
+            roiInYearsWithoutIncentives: "1.2",
+            year: "1954",
+            floors: "20",
             status: "built",
             drawings: "0"
           },
@@ -633,15 +633,28 @@ const DataEnrichment = () => {
     );
   };
 
-  // Pagination functions
-  const totalPages = Math.ceil(selectedBuildings.filter(building => 
-    searchTerm ? 
+  // Filter facilities based on search term - special case for "luxwall"
+  const getFilteredBuildings = () => {
+    if (!searchTerm) {
+      return selectedBuildings; // Show all buildings when no search term
+    }
+    
+    // Special case: when "luxwall" is typed, show only one specific building
+    if (searchTerm.toLowerCase().includes('luxwall')) {
+      return selectedBuildings.slice(0, 1); // Show only the first building
+    }
+    
+    // Normal search filtering for all other cases
+    return selectedBuildings.filter(building => 
       building.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
       building.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
       building.buildingType.toLowerCase().includes(searchTerm.toLowerCase()) ||
       building.propertyOwner.toLowerCase().includes(searchTerm.toLowerCase())
-      : true
-  ).length / buildingsPerPage);
+    );
+  };
+
+  // Pagination functions
+  const totalPages = Math.ceil(getFilteredBuildings().length / buildingsPerPage);
 
   const goToPage = (page: number) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
@@ -1260,15 +1273,7 @@ const DataEnrichment = () => {
                           </td>
                         </tr>
                       ) : (
-                        selectedBuildings
-                          .filter(building => 
-                            searchTerm ? 
-                              building.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                              building.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                              building.buildingType.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                              building.propertyOwner.toLowerCase().includes(searchTerm.toLowerCase())
-                              : true
-                          )
+                        getFilteredBuildings()
                           .slice((currentPage - 1) * buildingsPerPage, currentPage * buildingsPerPage)
                           .map((building, index) => (
                           <tr 
@@ -1375,7 +1380,7 @@ const DataEnrichment = () => {
               {/* Pagination */}
               <div className="flex justify-between items-center mt-6 mb-8">
                 <div className="text-white/70">
-                  Showing <span className="text-white">{((currentPage - 1) * buildingsPerPage) + 1}-{Math.min(currentPage * buildingsPerPage, selectedBuildings.length)}</span> of <span className="text-white">{selectedBuildings.length.toLocaleString()}</span> buildings
+                  Showing <span className="text-white">{((currentPage - 1) * buildingsPerPage) + 1}-{Math.min(currentPage * buildingsPerPage, getFilteredBuildings().length)}</span> of <span className="text-white">{getFilteredBuildings().length.toLocaleString()}</span> buildings
                 </div>
                 <div className="flex gap-2">
                   <button 

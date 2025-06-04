@@ -31,7 +31,7 @@ interface MapsIntegrationProps {
 
 // Detroit buildings data for markers
 const detroitBuildings = [
-  { lat: 42.33361, lng: -83.06028, name: "MGM Grand Detroit", type: "Casino/Hotel", savings: 1166688 },
+  { lat: 42.3291, lng: -83.0442, name: "Coleman A. Young Municipal Building", type: "Government", savings: 482000 },
   { lat: 42.3314, lng: -83.0458, name: "Renaissance Center", type: "Mixed-Use", savings: 2500000 },
   { lat: 42.3355, lng: -83.0566, name: "Comerica Park", type: "Stadium", savings: 800000 },
   { lat: 42.3408, lng: -83.0465, name: "Detroit Opera House", type: "Entertainment", savings: 450000 },
@@ -43,18 +43,18 @@ const detroitBuildings = [
 
 const MapsIntegration: React.FC<MapsIntegrationProps> = ({ 
   buildingData = {
-    name: "MGM Grand Detroit Hotel & Casino",
-    address: "1777 3rd Ave, Detroit, MI 48226",
-    coordinates: { lat: 42.33361, lng: -83.06028 },
-    buildingType: "Mixed-Use Casino/Hotel",
-    propertyOwner: "Vici Properties and MGM Resorts International",
-    totalSquareFootage: 1650000,
-    annualEnergyCost: 2450000,
-    totalWindows: 600,
-    energyStarScore: 65,
-    annualEnergySavings: 1166688,
-    paybackPeriod: 0.83,
-    luxwallProduct: "LuxWall Enthermal Plus™"
+    name: "Coleman A. Young Municipal Building",
+    address: "2 Woodward Ave, Detroit, MI 48226",
+    coordinates: { lat: 42.3291, lng: -83.0442 },
+    buildingType: "Government Building",
+    propertyOwner: "Detroit-Wayne Joint Building Authority",
+    totalSquareFootage: 780000,
+    annualEnergyCost: 2600000,
+    totalWindows: 1000,
+    energyStarScore: 82,
+    annualEnergySavings: 482000,
+    paybackPeriod: 1.2,
+    luxwallProduct: "LuxWall Enthermal™"
   }
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);

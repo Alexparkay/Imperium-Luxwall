@@ -468,23 +468,23 @@ const MarketDatabase = () => {
         const sampleBuildings: Building[] = [
           {
             id: 1,
-            name: "John Smith",
-            jobTitle: "Property Manager",
-            buildingName: "MGM Grand Detroit Hotel & Casino",
+            name: "Michael Chen",
+            jobTitle: "Building Operations Manager",
+            buildingName: "Coleman A. Young Municipal Building",
             emails: true,
             phoneNumbers: true,
             location: "Detroit, Michigan",
             enriched: false,
             verified: true,
-            buildingSize: "1.7M sq ft",
-            buildingType: "Mixed-Use Developments",
-            windowCount: "500+ windows",
-            propertyValue: "Over $25M",
-            floors: "17",
-            year: "2008",
+            buildingSize: "780K sq ft",
+            buildingType: "Government Buildings",
+            windowCount: "600 windows",
+            propertyValue: "$15M-$20M",
+            floors: "20",
+            year: "1954",
             status: "built",
-            address: "1777 3rd Ave, Detroit, MI 48226",
-            propertyOwner: "Vici Properties and MGM Resorts International"
+            address: "2 Woodward Ave, Detroit, MI 48226",
+            propertyOwner: "Detroit-Wayne Joint Building Authority"
           }
         ];
         
