@@ -237,7 +237,7 @@ const DataEnrichment = () => {
   const buildingsPerPage = 12;
   
   // Total buildings in the database
-  const totalBuildingsInDatabase = 851;
+  const totalBuildingsInDatabase = 14480;
 
   // Update the CSS animations in the useEffect to include the new animations
   useEffect(() => {

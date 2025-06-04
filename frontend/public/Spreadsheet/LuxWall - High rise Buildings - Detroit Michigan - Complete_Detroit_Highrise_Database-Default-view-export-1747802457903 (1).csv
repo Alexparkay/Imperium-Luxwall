@@ -67,7 +67,7 @@ September: 5.67
 October: 4.32
 November: 3.14
 December: 2.66",1,59,570540 USD,1720004 USD,2290544 USD,LuxWall Enthermal™,19,91%,100%,204368 USD,2086176 USD,20%,2224800 USD,1,1,1965,30,built,2
-Coleman A. Young Municipal Building,"2 Woodward Ave, Detroit, MI 48226","2 Woodward Ave, Detroit, MI 48226","42.3295, -83.0442",government,Detroit-Wayne Joint Building Authority,779999 sq ft,779999 sq ft,16815500,16815500,0.1528 $/kWh,2562244 USD,600,Average window size: 1 m × 1.5 m,0.49,north/south,72 °F / 22 °C,"January: 0°C / -6°C
+Coleman A. Young Municipal Building,"2 Woodward Ave, Detroit, MI 48226","2 Woodward Ave, Detroit, MI 48226","42.3295, -83.0442",government,Detroit-Wayne Joint Building Authority,779999 sq ft,779999 sq ft,16815500,16815500,0.1528 $/kWh,2562244 USD,1000,Average window size: 1 m × 1.5 m,0.49,north/south,72 °F / 22 °C,"January: 0°C / -6°C
 February: 2°C / -5°C
 March: 6°C / -1°C
 April: 14°C / 5°C
@@ -100,7 +100,7 @@ August: 5.82
 September: 5.67
 October: 4.32
 November: 3.14
-December: 2.66",1,82,57470 USD,455063 USD,512533 USD,LuxWall Enthermal R-18,18,94%,100%,30728 USD,481805 USD,18%,900000 USD,1.2,1.2,1954,20,built,1
+December: 2.66",1,82,57470 USD,455063 USD,512533 USD,LuxWall Enthermal R-18,18,94%,100%,30728 USD,89000 USD,18%,900000 USD,1.2,1.2,1954,20,built,1
 Gabriel Richard Building,"305 Michigan Avenue, Detroit, MI 48226","305 Michigan Avenue, Detroit, MI 48226","42.33139, -83.05167",mixed-use,Barbat Holdings,105400 sq ft,105400 sq ft,2371500,2371500,0.1742 $/kWh,413139 USD,72,Average window size: 1.5 m × 2 m,0.45,east/west,72 °F / 22 °C,"January: 0°C / -7°C
 February: 2°C / -9°C
 March: 2°C / -7°C
