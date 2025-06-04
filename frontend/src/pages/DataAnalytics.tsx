@@ -24,6 +24,227 @@ type CalculationBreakdowns = {
   [key: string]: CalculationBreakdown;
 };
 
+// Building Image Popup Component
+const BuildingImagePopup = ({ 
+  isOpen, 
+  onClose, 
+  companyName, 
+  imageType = 'before' 
+}: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+  companyName: string; 
+  imageType?: 'before' | 'after';
+}) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [analysisPhase, setAnalysisPhase] = useState('initializing');
+  const [showImage, setShowImage] = useState(false);
+
+  // Determine if this building should have a loading animation
+  const shouldShowLoading = ['Henry Ford Health', 'Quicken Loans'].includes(companyName);
+
+  // Map company names to image file names
+  const getImagePath = (company: string, type: 'before' | 'after') => {
+    const imageMap: { [key: string]: string } = {
+      'Coleman A. Young Municipal Building': 'Coleman A Young Municipal Building',
+      'Jeffersonian Apartments': 'Jeffersonian Apartments',
+      'Ford Motor Company': 'Ford Motor Company',
+      'General Motors': 'General Motors',
+      'Henry Ford Health': 'Henry Ford Health',
+      'Quicken Loans': 'Quicken Loans'
+    };
+    
+    const imageName = imageMap[company] || company;
+    const folder = type === 'before' ? 'Before' : 'After';
+    return `/images/Luxwall/${folder}/${imageName} ${type === 'before' ? 'Before' : 'After'}.png`;
+  };
+
+  // Loading simulation for the last two buildings
+  useEffect(() => {
+    if (isOpen && shouldShowLoading) {
+      setIsLoading(true);
+      setLoadingProgress(0);
+      setAnalysisPhase('initializing');
+      setShowImage(false);
+
+      const phases = [
+        { name: 'initializing', duration: 800, message: 'Initializing building analysis system...' },
+        { name: 'scanning', duration: 1200, message: 'Scanning satellite imagery for facade details...' },
+        { name: 'processing', duration: 1500, message: 'Processing window detection algorithms...' },
+        { name: 'analyzing', duration: 1000, message: 'Analyzing energy efficiency patterns...' },
+        { name: 'finalizing', duration: 500, message: 'Finalizing visualization rendering...' }
+      ];
+
+      let currentPhaseIndex = 0;
+      let progress = 0;
+
+      const updateProgress = () => {
+        const interval = setInterval(() => {
+          progress += Math.random() * 8 + 4; // Random progress increment
+          
+          if (progress > 100) progress = 100;
+          setLoadingProgress(Math.floor(progress));
+
+          // Update phase based on progress
+          const targetProgress = (currentPhaseIndex + 1) * (100 / phases.length);
+          if (progress >= targetProgress && currentPhaseIndex < phases.length - 1) {
+            currentPhaseIndex++;
+            setAnalysisPhase(phases[currentPhaseIndex].name);
+          }
+
+          if (progress >= 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+              setIsLoading(false);
+              setShowImage(true);
+            }, 300);
+          }
+        }, 100);
+      };
+
+      updateProgress();
+    } else if (isOpen && !shouldShowLoading) {
+      // Show image immediately for pre-loaded buildings
+      setIsLoading(false);
+      setShowImage(true);
+    }
+  }, [isOpen, companyName, shouldShowLoading]);
+
+  // Reset states when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setIsLoading(false);
+      setShowImage(false);
+      setLoadingProgress(0);
+      setAnalysisPhase('initializing');
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  const getPhaseMessage = () => {
+    switch (analysisPhase) {
+      case 'initializing': return 'Initializing building analysis system...';
+      case 'scanning': return 'Scanning satellite imagery for facade details...';
+      case 'processing': return 'Processing window detection algorithms...';
+      case 'analyzing': return 'Analyzing energy efficiency patterns...';
+      case 'finalizing': return 'Finalizing visualization rendering...';
+      default: return 'Processing building data...';
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div 
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      <div className="relative bg-[#1a1a1a]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl max-w-2xl max-h-[90vh] overflow-hidden">
+        <div className="flex items-center justify-between p-4 border-b border-white/10">
+          <h3 className="text-lg font-bold text-white">{companyName}</h3>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+          >
+            <MdClose className="text-white text-lg" />
+          </button>
+        </div>
+        
+        <div className="p-4">
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              {/* Enhanced Loading Animation */}
+              <div className="relative mb-8">
+                <div className="w-24 h-24 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
+                <div className="absolute inset-2 w-16 h-16 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
+                <div className="absolute inset-6 w-8 h-8 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" style={{ animationDuration: '2s' }}></div>
+              </div>
+
+              {/* Loading Message */}
+              <div className="text-center mb-6">
+                <h4 className="text-xl font-bold text-white mb-2">Building Analysis in Progress</h4>
+                <p className="text-blue-300 mb-4 animate-pulse">{getPhaseMessage()}</p>
+              </div>
+
+              {/* Progress Bar */}
+              <div className="w-full max-w-md mb-6">
+                <div className="flex justify-between text-sm text-blue-300 mb-2">
+                  <span>Analysis Progress</span>
+                  <span>{loadingProgress}%</span>
+                </div>
+                <div className="w-full bg-gray-800/50 rounded-full h-3 overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-blue-500 via-cyan-500 to-purple-500 rounded-full transition-all duration-300 animate-pulse"
+                    style={{ width: `${loadingProgress}%` }}
+                  ></div>
+                </div>
+              </div>
+
+              {/* Processing Steps */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-md">
+                <div className="bg-black/30 backdrop-blur-sm rounded-lg p-3 border border-blue-500/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className={`w-3 h-3 rounded-full ${analysisPhase === 'scanning' ? 'bg-blue-500 animate-pulse' : 'bg-gray-600'}`}></div>
+                    <span className="text-white text-sm font-medium">Satellite Scan</span>
+                  </div>
+                  <p className="text-gray-400 text-xs">High-resolution facade analysis</p>
+                </div>
+
+                <div className="bg-black/30 backdrop-blur-sm rounded-lg p-3 border border-cyan-500/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className={`w-3 h-3 rounded-full ${analysisPhase === 'processing' ? 'bg-cyan-500 animate-pulse' : 'bg-gray-600'}`}></div>
+                    <span className="text-white text-sm font-medium">AI Processing</span>
+                  </div>
+                  <p className="text-gray-400 text-xs">Window detection algorithms</p>
+                </div>
+
+                <div className="bg-black/30 backdrop-blur-sm rounded-lg p-3 border border-purple-500/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className={`w-3 h-3 rounded-full ${analysisPhase === 'analyzing' ? 'bg-purple-500 animate-pulse' : 'bg-gray-600'}`}></div>
+                    <span className="text-white text-sm font-medium">Energy Analysis</span>
+                  </div>
+                  <p className="text-gray-400 text-xs">Efficiency pattern recognition</p>
+                </div>
+
+                <div className="bg-black/30 backdrop-blur-sm rounded-lg p-3 border border-green-500/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className={`w-3 h-3 rounded-full ${analysisPhase === 'finalizing' ? 'bg-green-500 animate-pulse' : 'bg-gray-600'}`}></div>
+                    <span className="text-white text-sm font-medium">Visualization</span>
+                  </div>
+                  <p className="text-gray-400 text-xs">Rendering building facade</p>
+                </div>
+              </div>
+            </div>
+          ) : showImage ? (
+            <div className="text-center animate-fadeIn">
+              <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl p-4 mb-4 border border-blue-500/20">
+                <h4 className="text-white font-semibold mb-2">
+                  {imageType === 'before' ? 'Current Building State' : 'After Luxwall Implementation'}
+                </h4>
+                <p className="text-gray-300 text-sm">
+                  {imageType === 'before' 
+                    ? 'Building facade with existing windows showing energy inefficiency patterns'
+                    : 'Building after Luxwall installation showing improved energy performance'
+                  }
+                </p>
+              </div>
+              <img 
+                src={getImagePath(companyName, imageType)} 
+                alt={`${companyName} ${imageType}`}
+                className="max-w-full max-h-[400px] object-contain rounded-lg shadow-lg animate-fadeIn"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/images/placeholder-building.png';
+                }}
+              />
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Google Maps Widget Component
 const GoogleMapsWidget = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -1008,6 +1229,8 @@ const DataAnalytics = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showCalculationModal, setShowCalculationModal] = useState(false);
   const [selectedCalculation, setSelectedCalculation] = useState<string | null>(null);
+  const [showBuildingImage, setShowBuildingImage] = useState(false);
+  const [selectedBuilding, setSelectedBuilding] = useState<string>('');
   
   // Progressive loading states
   const [satelliteCardsLoaded, setSatelliteCardsLoaded] = useState<boolean[]>([false, false, false, false, false, false]);
@@ -1606,6 +1829,175 @@ const DataAnalytics = () => {
     }
   }, [isLoading]);
 
+  // Add CSS animations
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.innerHTML = `
+      @keyframes fadeIn {
+        from { 
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to { 
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      .animate-fadeIn {
+        animation: fadeIn 0.6s ease-out forwards;
+      }
+      
+      @keyframes dashMove {
+        0% {
+          stroke-dashoffset: 0;
+        }
+        100% {
+          stroke-dashoffset: 15;
+        }
+      }
+      
+      @keyframes dataPacket0 {
+        0% {
+          left: 50%;
+          top: 50%;
+          opacity: 0;
+        }
+        20% {
+          opacity: 1;
+        }
+        80% {
+          opacity: 1;
+        }
+        100% {
+          left: 10%;
+          top: 15%;
+          opacity: 0;
+        }
+      }
+      
+      @keyframes dataPacket1 {
+        0% {
+          left: 50%;
+          top: 50%;
+          opacity: 0;
+        }
+        20% {
+          opacity: 1;
+        }
+        80% {
+          opacity: 1;
+        }
+        100% {
+          left: 90%;
+          top: 15%;
+          opacity: 0;
+        }
+      }
+      
+      @keyframes dataPacket2 {
+        0% {
+          left: 50%;
+          top: 50%;
+          opacity: 0;
+        }
+        20% {
+          opacity: 1;
+        }
+        80% {
+          opacity: 1;
+        }
+        100% {
+          left: 5%;
+          top: 50%;
+          opacity: 0;
+        }
+      }
+      
+      @keyframes dataPacket3 {
+        0% {
+          left: 50%;
+          top: 50%;
+          opacity: 0;
+        }
+        20% {
+          opacity: 1;
+        }
+        80% {
+          opacity: 1;
+        }
+        100% {
+          left: 95%;
+          top: 50%;
+          opacity: 0;
+        }
+      }
+      
+      @keyframes dataPacket4 {
+        0% {
+          left: 50%;
+          top: 50%;
+          opacity: 0;
+        }
+        20% {
+          opacity: 1;
+        }
+        80% {
+          opacity: 1;
+        }
+        100% {
+          left: 10%;
+          top: 85%;
+          opacity: 0;
+        }
+      }
+      
+      @keyframes dataPacket5 {
+        0% {
+          left: 50%;
+          top: 50%;
+          opacity: 0;
+        }
+        20% {
+          opacity: 1;
+        }
+        80% {
+          opacity: 1;
+        }
+        100% {
+          left: 90%;
+          top: 85%;
+          opacity: 0;
+        }
+      }
+      
+      @keyframes windowDetect {
+        0% {
+          transform: scale(0);
+          opacity: 0;
+          box-shadow: 0 0 0 rgba(59, 130, 246, 0);
+        }
+        50% {
+          transform: scale(1.2);
+          opacity: 0.8;
+          box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+          box-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
+        }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      if (document.head.contains(style)) {
+        document.head.removeChild(style);
+      }
+    };
+  }, []);
+
   const cardBaseClass = "backdrop-blur-xl bg-gradient-to-br from-white/[0.08] via-blue-500/[0.05] to-white/[0.02] rounded-3xl shadow-[0_8px_32px_rgba(59,130,246,0.15)] transition-all duration-500 border border-blue-500/20 group relative overflow-hidden hover:shadow-[0_20px_40px_rgba(59,130,246,0.25)] hover:border-blue-400/30 hover:-translate-y-1";
 
   const formatCurrency = (value: number): string => {
@@ -1673,6 +2065,16 @@ const DataAnalytics = () => {
       </div>
     </div>
   );
+
+  const openBuildingImagePopup = (companyName: string) => {
+    setSelectedBuilding(companyName);
+    setShowBuildingImage(true);
+  };
+
+  const closeBuildingImagePopup = () => {
+    setShowBuildingImage(false);
+    setSelectedBuilding('');
+  };
 
   if (isLoading) {
     return (
@@ -2720,6 +3122,7 @@ const DataAnalytics = () => {
                             <th className="text-right py-3 px-4 text-cyan-300 font-semibold text-sm">Annual Savings</th>
                             <th className="text-right py-3 px-4 text-cyan-300 font-semibold text-sm">Payback</th>
                             <th className="text-center py-3 px-4 text-cyan-300 font-semibold text-sm">Status</th>
+                            <th className="text-center py-3 px-4 text-cyan-300 font-semibold text-sm">View</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -2739,6 +3142,15 @@ const DataAnalytics = () => {
                             <td className="py-4 px-4 text-center">
                               <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded-full text-xs font-medium">Complete</span>
                             </td>
+                            <td className="py-4 px-4 text-center">
+                              <button
+                                onClick={() => openBuildingImagePopup('Coleman A. Young Municipal Building')}
+                                className="p-2 rounded-full bg-cyan-500/20 hover:bg-cyan-500/40 transition-colors border border-cyan-500/30 hover:scale-110"
+                                title="View current building facade"
+                              >
+                                <MdInfoOutline className="text-cyan-300 text-sm" />
+                              </button>
+                            </td>
                           </tr>
                           <tr className="border-b border-cyan-500/10 hover:bg-cyan-500/5 transition-colors">
                             <td className="py-4 px-4">
@@ -2755,6 +3167,15 @@ const DataAnalytics = () => {
                             </td>
                             <td className="py-4 px-4 text-center">
                               <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded-full text-xs font-medium">Complete</span>
+                            </td>
+                            <td className="py-4 px-4 text-center">
+                              <button
+                                onClick={() => openBuildingImagePopup('Jeffersonian Apartments')}
+                                className="p-2 rounded-full bg-cyan-500/20 hover:bg-cyan-500/40 transition-colors border border-cyan-500/30 hover:scale-110"
+                                title="View current building facade"
+                              >
+                                <MdInfoOutline className="text-cyan-300 text-sm" />
+                              </button>
                             </td>
                           </tr>
                           <tr className="border-b border-cyan-500/10 hover:bg-cyan-500/5 transition-colors">
@@ -2773,6 +3194,15 @@ const DataAnalytics = () => {
                             <td className="py-4 px-4 text-center">
                               <span className="bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded-full text-xs font-medium animate-pulse">Processing</span>
                             </td>
+                            <td className="py-4 px-4 text-center">
+                              <button
+                                onClick={() => openBuildingImagePopup('Ford Motor Company')}
+                                className="p-2 rounded-full bg-cyan-500/20 hover:bg-cyan-500/40 transition-colors border border-cyan-500/30 hover:scale-110"
+                                title="View current building facade"
+                              >
+                                <MdInfoOutline className="text-cyan-300 text-sm" />
+                              </button>
+                            </td>
                           </tr>
                           <tr className="border-b border-cyan-500/10 hover:bg-cyan-500/5 transition-colors">
                             <td className="py-4 px-4">
@@ -2789,6 +3219,15 @@ const DataAnalytics = () => {
                             </td>
                             <td className="py-4 px-4 text-center">
                               <span className="bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded-full text-xs font-medium animate-pulse">Processing</span>
+                            </td>
+                            <td className="py-4 px-4 text-center">
+                              <button
+                                onClick={() => openBuildingImagePopup('General Motors')}
+                                className="p-2 rounded-full bg-cyan-500/20 hover:bg-cyan-500/40 transition-colors border border-cyan-500/30 hover:scale-110"
+                                title="View current building facade"
+                              >
+                                <MdInfoOutline className="text-cyan-300 text-sm" />
+                              </button>
                             </td>
                           </tr>
                           <tr className="border-b border-cyan-500/10 hover:bg-cyan-500/5 transition-colors">
@@ -2807,6 +3246,15 @@ const DataAnalytics = () => {
                             <td className="py-4 px-4 text-center">
                               <span className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full text-xs font-medium">Queued</span>
                             </td>
+                            <td className="py-4 px-4 text-center">
+                              <button
+                                onClick={() => openBuildingImagePopup('Henry Ford Health')}
+                                className="p-2 rounded-full bg-cyan-500/20 hover:bg-cyan-500/40 transition-colors border border-cyan-500/30 hover:scale-110"
+                                title="View current building facade"
+                              >
+                                <MdInfoOutline className="text-cyan-300 text-sm" />
+                              </button>
+                            </td>
                           </tr>
                           <tr className="hover:bg-cyan-500/5 transition-colors">
                             <td className="py-4 px-4">
@@ -2823,6 +3271,15 @@ const DataAnalytics = () => {
                             </td>
                             <td className="py-4 px-4 text-center">
                               <span className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full text-xs font-medium">Queued</span>
+                            </td>
+                            <td className="py-4 px-4 text-center">
+                              <button
+                                onClick={() => openBuildingImagePopup('Quicken Loans')}
+                                className="p-2 rounded-full bg-cyan-500/20 hover:bg-cyan-500/40 transition-colors border border-cyan-500/30 hover:scale-110"
+                                title="View current building facade"
+                              >
+                                <MdInfoOutline className="text-cyan-300 text-sm" />
+                              </button>
                             </td>
                           </tr>
                         </tbody>
@@ -2957,6 +3414,14 @@ const DataAnalytics = () => {
           </div>
         </div>
       )}
+      
+      {/* Building Image Popup */}
+      <BuildingImagePopup
+        isOpen={showBuildingImage}
+        onClose={closeBuildingImagePopup}
+        companyName={selectedBuilding}
+        imageType="before"
+      />
     </div>
   );
 };

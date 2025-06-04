@@ -5,6 +5,217 @@ import { toast } from 'react-hot-toast';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, AreaChart, Area, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import { FaServer, FaMoneyBillWave, FaDatabase, FaChartLine, FaRegCalendarAlt, FaWindowMaximize, FaCalculator, FaLightbulb, FaCheckCircle } from 'react-icons/fa';
 
+const BuildingImagePopup = ({ 
+  isOpen, 
+  onClose, 
+  companyName, 
+  imageType = 'after' 
+}: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+  companyName: string; 
+  imageType?: 'before' | 'after';
+}) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [analysisPhase, setAnalysisPhase] = useState('initializing');
+  const [showImage, setShowImage] = useState(false);
+
+  // Determine if this building should have a loading animation
+  const shouldShowLoading = ['Henry Ford Health', 'Quicken Loans', 'MGM Grand Detroit Hotel & Casino'].includes(companyName);
+
+  const getImagePath = (company: string, type: 'before' | 'after') => {
+    const companyMappings: { [key: string]: string } = {
+      'MGM Grand Detroit Hotel & Casino': 'MGM Grand Detroit Hotel & Casino',
+      'Jeffersonian Apartments': 'Jeffersonian Apartments',
+      'Ford Motor Company': 'Ford Motor Company',
+      'General Motors': 'General Motors',
+      'Henry Ford Health': 'Henry Ford Health',
+      'Quicken Loans': 'Quicken Loans'
+    };
+    
+    const mappedName = companyMappings[company] || company;
+    const folder = type === 'before' ? 'Before' : 'After';
+    return `/images/Luxwall/${folder}/${mappedName} ${type === 'before' ? 'Before' : 'After'}.png`;
+  };
+
+  // Loading simulation for specific buildings
+  useEffect(() => {
+    if (isOpen && shouldShowLoading) {
+      setIsLoading(true);
+      setLoadingProgress(0);
+      setAnalysisPhase('initializing');
+      setShowImage(false);
+
+      const phases = [
+        { name: 'initializing', duration: 800, message: 'Initializing post-implementation analysis...' },
+        { name: 'scanning', duration: 1200, message: 'Rendering Luxwall facade improvements...' },
+        { name: 'processing', duration: 1500, message: 'Processing energy efficiency visualizations...' },
+        { name: 'analyzing', duration: 1000, message: 'Analyzing post-installation performance...' },
+        { name: 'finalizing', duration: 500, message: 'Finalizing implementation preview...' }
+      ];
+
+      let currentPhaseIndex = 0;
+      let progress = 0;
+
+      const updateProgress = () => {
+        const interval = setInterval(() => {
+          progress += Math.random() * 8 + 4; // Random progress increment
+          
+          if (progress > 100) progress = 100;
+          setLoadingProgress(Math.floor(progress));
+
+          // Update phase based on progress
+          const targetProgress = (currentPhaseIndex + 1) * (100 / phases.length);
+          if (progress >= targetProgress && currentPhaseIndex < phases.length - 1) {
+            currentPhaseIndex++;
+            setAnalysisPhase(phases[currentPhaseIndex].name);
+          }
+
+          if (progress >= 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+              setIsLoading(false);
+              setShowImage(true);
+            }, 300);
+          }
+        }, 100);
+      };
+
+      updateProgress();
+    } else if (isOpen && !shouldShowLoading) {
+      // Show image immediately for pre-loaded buildings
+      setIsLoading(false);
+      setShowImage(true);
+    }
+  }, [isOpen, companyName, shouldShowLoading]);
+
+  // Reset states when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setIsLoading(false);
+      setShowImage(false);
+      setLoadingProgress(0);
+      setAnalysisPhase('initializing');
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  const getPhaseMessage = () => {
+    switch (analysisPhase) {
+      case 'initializing': return 'Initializing post-implementation analysis...';
+      case 'scanning': return 'Rendering Luxwall facade improvements...';
+      case 'processing': return 'Processing energy efficiency visualizations...';
+      case 'analyzing': return 'Analyzing post-installation performance...';
+      case 'finalizing': return 'Finalizing implementation preview...';
+      default: return 'Processing implementation data...';
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+      <div className="relative max-w-2xl w-full bg-gradient-to-br from-[#1A1A1A]/95 via-[#1A1A1A]/90 to-[#1A1A1A]/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-blue-500/20 p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-xl font-bold text-white">{companyName} - {imageType === 'after' ? 'After Implementation' : 'Current State'}</h3>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+          >
+            <MdClose className="text-white text-xl" />
+          </button>
+        </div>
+        
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-12">
+            {/* Enhanced Loading Animation */}
+            <div className="relative mb-8">
+              <div className="w-24 h-24 border-4 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin"></div>
+              <div className="absolute inset-2 w-16 h-16 border-4 border-green-500/30 border-t-green-500 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
+              <div className="absolute inset-6 w-8 h-8 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" style={{ animationDuration: '2s' }}></div>
+            </div>
+
+            {/* Loading Message */}
+            <div className="text-center mb-6">
+              <h4 className="text-xl font-bold text-white mb-2">Implementation Analysis in Progress</h4>
+              <p className="text-emerald-300 mb-4 animate-pulse">{getPhaseMessage()}</p>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="w-full max-w-md mb-6">
+              <div className="flex justify-between text-sm text-emerald-300 mb-2">
+                <span>Rendering Progress</span>
+                <span>{loadingProgress}%</span>
+              </div>
+              <div className="w-full bg-gray-800/50 rounded-full h-3 overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-emerald-500 via-green-500 to-blue-500 rounded-full transition-all duration-300 animate-pulse"
+                  style={{ width: `${loadingProgress}%` }}
+                ></div>
+              </div>
+            </div>
+
+            {/* Processing Steps */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-md">
+              <div className="bg-black/30 backdrop-blur-sm rounded-lg p-3 border border-emerald-500/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className={`w-3 h-3 rounded-full ${analysisPhase === 'scanning' ? 'bg-emerald-500 animate-pulse' : 'bg-gray-600'}`}></div>
+                  <span className="text-white text-sm font-medium">Facade Rendering</span>
+                </div>
+                <p className="text-gray-400 text-xs">Post-Luxwall visualization</p>
+              </div>
+
+              <div className="bg-black/30 backdrop-blur-sm rounded-lg p-3 border border-green-500/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className={`w-3 h-3 rounded-full ${analysisPhase === 'processing' ? 'bg-green-500 animate-pulse' : 'bg-gray-600'}`}></div>
+                  <span className="text-white text-sm font-medium">Energy Modeling</span>
+                </div>
+                <p className="text-gray-400 text-xs">Efficiency improvements</p>
+              </div>
+
+              <div className="bg-black/30 backdrop-blur-sm rounded-lg p-3 border border-blue-500/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className={`w-3 h-3 rounded-full ${analysisPhase === 'analyzing' ? 'bg-blue-500 animate-pulse' : 'bg-gray-600'}`}></div>
+                  <span className="text-white text-sm font-medium">Performance</span>
+                </div>
+                <p className="text-gray-400 text-xs">Post-install analysis</p>
+              </div>
+
+              <div className="bg-black/30 backdrop-blur-sm rounded-lg p-3 border border-cyan-500/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className={`w-3 h-3 rounded-full ${analysisPhase === 'finalizing' ? 'bg-cyan-500 animate-pulse' : 'bg-gray-600'}`}></div>
+                  <span className="text-white text-sm font-medium">Final Render</span>
+                </div>
+                <p className="text-gray-400 text-xs">Implementation preview</p>
+              </div>
+            </div>
+          </div>
+        ) : showImage ? (
+          <div className="animate-fadeIn">
+            <div className="aspect-video bg-black/20 rounded-lg overflow-hidden border border-white/10 mb-4">
+              <img 
+                src={getImagePath(companyName, imageType)}
+                alt={`${companyName} ${imageType} implementation`}
+                className="w-full h-full object-cover animate-fadeIn"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = '/images/placeholder-building.jpg';
+                }}
+              />
+            </div>
+            
+            <div className="p-3 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+              <p className="text-emerald-300 text-sm">
+                {imageType === 'after' ? 'Projected appearance after Luxwall implementation with enhanced energy efficiency' : 'Current building facade'}
+              </p>
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+};
+
 const WindowReplacementInsights = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
@@ -14,6 +225,8 @@ const WindowReplacementInsights = () => {
   const [expandedImage, setExpandedImage] = useState<string | null>(null);
   const [loadingMessage, setLoadingMessage] = useState("Gathering satellite data...");
   const [loadingProgress, setLoadingProgress] = useState(0);
+  const [showBuildingImage, setShowBuildingImage] = useState(false);
+  const [selectedBuilding, setSelectedBuilding] = useState<string>('');
 
   const handleContinue = () => {
     navigate('/outreach');
@@ -33,6 +246,16 @@ const WindowReplacementInsights = () => {
 
   const closeImageModal = () => {
     setExpandedImage(null);
+  };
+
+  const openBuildingImagePopup = (companyName: string) => {
+    setSelectedBuilding(companyName);
+    setShowBuildingImage(true);
+  };
+
+  const closeBuildingImagePopup = () => {
+    setShowBuildingImage(false);
+    setSelectedBuilding('');
   };
 
   // Initial Page Loading Screen Component
@@ -418,6 +641,32 @@ const WindowReplacementInsights = () => {
     };
 
     updateLoading();
+
+    // Add CSS animations
+    const style = document.createElement('style');
+    style.innerHTML = `
+      @keyframes fadeIn {
+        from { 
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to { 
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      .animate-fadeIn {
+        animation: fadeIn 0.6s ease-out forwards;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      if (document.head.contains(style)) {
+        document.head.removeChild(style);
+      }
+    };
   }, []);
 
   // Show initial loading screen
@@ -502,7 +751,7 @@ const WindowReplacementInsights = () => {
                 <div className="space-y-3 bg-black/40 backdrop-blur-sm rounded-2xl p-5 border border-white/20">
                   <div className="flex justify-between items-center py-2 border-b border-white/20">
                     <span className="text-sm text-gray-300">System Scale</span>
-                    <span className="text-sm font-semibold text-white">1,250 windows</span>
+                    <span className="text-sm font-semibold text-white">968 windows</span>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-white/20">
                     <span className="text-sm text-gray-300">Implementation Time</span>
@@ -662,7 +911,7 @@ const WindowReplacementInsights = () => {
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-white/20">
                     <span className="text-sm text-gray-300">Window Count</span>
-                    <span className="text-sm font-semibold text-white">1,250 windows</span>
+                    <span className="text-sm font-semibold text-white">968 windows</span>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-white/20">
                     <span className="text-sm text-gray-300">CO₂ Reduction</span>
@@ -1068,7 +1317,7 @@ const WindowReplacementInsights = () => {
                           </li>
                           <li className="flex items-center">
                             <div className="h-2 w-2 rounded-full bg-blue-500 mr-2"></div>
-                            <span>Window count: 1,250</span>
+                            <span>Window count: 968</span>
                           </li>
                           <li className="flex items-center">
                             <div className="h-2 w-2 rounded-full bg-blue-500 mr-2"></div>
@@ -1455,6 +1704,7 @@ const WindowReplacementInsights = () => {
                           <th className="text-right py-3 px-4 text-emerald-300 font-semibold text-sm">Project Value</th>
                           <th className="text-right py-3 px-4 text-emerald-300 font-semibold text-sm">Timeline</th>
                           <th className="text-center py-3 px-4 text-emerald-300 font-semibold text-sm">Phase</th>
+                          <th className="text-center py-3 px-4 text-emerald-300 font-semibold text-sm">View</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1474,6 +1724,15 @@ const WindowReplacementInsights = () => {
                           <td className="py-4 px-4 text-center">
                             <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded-full text-xs font-medium">Planning</span>
                           </td>
+                          <td className="py-4 px-4 text-center">
+                            <button
+                              onClick={() => openBuildingImagePopup('MGM Grand Detroit Hotel & Casino')}
+                              className="p-2 rounded-full bg-emerald-500/20 hover:bg-emerald-500/40 transition-colors border border-emerald-500/30 hover:scale-110"
+                              title="View post-implementation facade"
+                            >
+                              <MdInfoOutline className="text-emerald-300 text-sm" />
+                            </button>
+                          </td>
                         </tr>
                         <tr className="border-b border-emerald-500/10 hover:bg-emerald-500/5 transition-colors">
                           <td className="py-4 px-4">
@@ -1490,6 +1749,15 @@ const WindowReplacementInsights = () => {
                           </td>
                           <td className="py-4 px-4 text-center">
                             <span className="bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-full text-xs font-medium animate-pulse">Design</span>
+                          </td>
+                          <td className="py-4 px-4 text-center">
+                            <button
+                              onClick={() => openBuildingImagePopup('Jeffersonian Apartments')}
+                              className="p-2 rounded-full bg-emerald-500/20 hover:bg-emerald-500/40 transition-colors border border-emerald-500/30 hover:scale-110"
+                              title="View post-implementation facade"
+                            >
+                              <MdInfoOutline className="text-emerald-300 text-sm" />
+                            </button>
                           </td>
                         </tr>
                         <tr className="border-b border-emerald-500/10 hover:bg-emerald-500/5 transition-colors">
@@ -1508,6 +1776,15 @@ const WindowReplacementInsights = () => {
                           <td className="py-4 px-4 text-center">
                             <span className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full text-xs font-medium">Planning</span>
                           </td>
+                          <td className="py-4 px-4 text-center">
+                            <button
+                              onClick={() => openBuildingImagePopup('Ford Motor Company')}
+                              className="p-2 rounded-full bg-emerald-500/20 hover:bg-emerald-500/40 transition-colors border border-emerald-500/30 hover:scale-110"
+                              title="View post-implementation facade"
+                            >
+                              <MdInfoOutline className="text-emerald-300 text-sm" />
+                            </button>
+                          </td>
                         </tr>
                         <tr className="border-b border-emerald-500/10 hover:bg-emerald-500/5 transition-colors">
                           <td className="py-4 px-4">
@@ -1524,6 +1801,15 @@ const WindowReplacementInsights = () => {
                           </td>
                           <td className="py-4 px-4 text-center">
                             <span className="bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-full text-xs font-medium">Design</span>
+                          </td>
+                          <td className="py-4 px-4 text-center">
+                            <button
+                              onClick={() => openBuildingImagePopup('General Motors')}
+                              className="p-2 rounded-full bg-emerald-500/20 hover:bg-emerald-500/40 transition-colors border border-emerald-500/30 hover:scale-110"
+                              title="View post-implementation facade"
+                            >
+                              <MdInfoOutline className="text-emerald-300 text-sm" />
+                            </button>
                           </td>
                         </tr>
                         <tr className="border-b border-emerald-500/10 hover:bg-emerald-500/5 transition-colors">
@@ -1542,6 +1828,15 @@ const WindowReplacementInsights = () => {
                           <td className="py-4 px-4 text-center">
                             <span className="bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded-full text-xs font-medium">Approval</span>
                           </td>
+                          <td className="py-4 px-4 text-center">
+                            <button
+                              onClick={() => openBuildingImagePopup('Henry Ford Health')}
+                              className="p-2 rounded-full bg-emerald-500/20 hover:bg-emerald-500/40 transition-colors border border-emerald-500/30 hover:scale-110"
+                              title="View post-implementation facade"
+                            >
+                              <MdInfoOutline className="text-emerald-300 text-sm" />
+                            </button>
+                          </td>
                         </tr>
                         <tr className="hover:bg-emerald-500/5 transition-colors">
                           <td className="py-4 px-4">
@@ -1558,6 +1853,15 @@ const WindowReplacementInsights = () => {
                           </td>
                           <td className="py-4 px-4 text-center">
                             <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded-full text-xs font-medium">Installation</span>
+                          </td>
+                          <td className="py-4 px-4 text-center">
+                            <button
+                              onClick={() => openBuildingImagePopup('Quicken Loans')}
+                              className="p-2 rounded-full bg-emerald-500/20 hover:bg-emerald-500/40 transition-colors border border-emerald-500/30 hover:scale-110"
+                              title="View post-implementation facade"
+                            >
+                              <MdInfoOutline className="text-emerald-300 text-sm" />
+                            </button>
                           </td>
                         </tr>
                       </tbody>
@@ -1656,6 +1960,15 @@ const WindowReplacementInsights = () => {
           isOpen={true}
           onClose={closeImageModal}
           imageSrc={expandedImage}
+        />
+      )}
+
+      {/* Building Image Popup */}
+      {showBuildingImage && (
+        <BuildingImagePopup
+          isOpen={showBuildingImage}
+          onClose={closeBuildingImagePopup}
+          companyName={selectedBuilding}
         />
       )}
     </div>
